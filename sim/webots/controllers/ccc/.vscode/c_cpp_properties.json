@@ -1,0 +1,35 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+            	//该目录为webots库头文件所在目录
+                "D:\\WORK\\SOFTWARES\\webots\\webots\\include\\controller\\cpp"
+            ],
+            "defines": [
+                "${default}"
+            ],
+            "macFrameworkPath": [
+                "${default}"
+            ],
+            "forcedInclude": [
+                "${default}"
+            ],
+            "compileCommands": "${default}",
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "databaseFilename": "${default}",
+                "path": [
+                    "${default}",
+                    //该目录为webots动态链接库文件所在目录
+                    "D:\\WORK\\SOFTWARES\\webots\\Webots\\lib\\controller"
+                ]
+            },
+            "intelliSenseMode": "${default}",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "compilerPath": "${default}"
+        }
+    ],
+    "version": 4
+}

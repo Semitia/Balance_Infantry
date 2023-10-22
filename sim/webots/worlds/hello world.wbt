@@ -1,0 +1,157 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/CircleArena.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.24851396468938414 0.011869814508130455 0.9685555827405602 1.9305038961701486
+  position 0.7600525972067428 -0.5574541728984785 0.5217095129863013
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+CircleArena {
+}
+Robot {
+  translation 0.08486921085834867 0.4515109566390916 0.05891793018830623
+  rotation 0.9538694510478145 -0.29149580134244296 0.0718558846404949 -2.669268537001716
+  children [
+    Solid {
+      translation 0 0 0.024
+      children [
+        DEF holder Shape {
+          appearance PBRAppearance {
+          }
+          geometry Box {
+            size 0.045 0.15 0.01
+          }
+        }
+      ]
+      name "holder"
+      boundingObject USE holder
+      physics Physics {
+      }
+    }
+    Solid {
+      translation 0 0.025 -0.022
+      rotation 1 0 0 1.57
+      children [
+        Shape {
+          appearance PBRAppearance {
+          }
+          geometry Cylinder {
+            height 0.01
+            radius 0.01
+          }
+        }
+      ]
+      name "head"
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position 6818.103949980189
+        anchor 0 0 0.04
+      }
+      device [
+        RotationalMotor {
+          name "motor1"
+        }
+      ]
+      endPoint DEF wheel1 Solid {
+        translation -0.039973100000000004 -0.0026922330750612225 0.037846606470747356
+        rotation 0.5426230909698179 -0.6415139230868039 0.5422361732973363 4.2832473907423125
+        children [
+          DEF WHEEL Shape {
+            appearance PBRAppearance {
+              baseColorMap ImageTexture {
+                url [
+                  "../imgs/1f974.png"
+                ]
+              }
+            }
+            geometry Cylinder {
+              height 0.02
+              radius 0.03
+            }
+          }
+        ]
+        name "solid(2)"
+        boundingObject USE WHEEL
+        physics Physics {
+        }
+        linearVelocity 0.016760553860267532 0.024208542016590503 0.00011680351687855993
+        angularVelocity -0.8085315122243727 0.5604580753243367 -0.0011176252633091866
+      }
+    }
+    InertialUnit {
+      translation 0 0 -0.04
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 0 1 0
+          }
+          geometry Box {
+            size 0.005 0.005 0.005
+          }
+        }
+      ]
+      name "imu"
+    }
+    HingeJoint {
+      jointParameters HingeJointParameters {
+        position 9541.67189687533
+        anchor 0 0 0.04
+      }
+      device [
+        RotationalMotor {
+          name "motor2"
+        }
+      ]
+      endPoint DEF wheel1 Solid {
+        translation 0.03995299999999999 -0.0018086458946025602 0.037032809994483454
+        rotation -0.4664804655412744 0.7515627720443206 -0.46642188514847005 1.8514144880802086
+        children [
+          DEF WHEEL Shape {
+            appearance PBRAppearance {
+              baseColorMap ImageTexture {
+                url [
+                  "../imgs/1f974.png"
+                ]
+              }
+            }
+            geometry Cylinder {
+              height 0.02
+              radius 0.03
+            }
+          }
+        ]
+        name "solid(1)"
+        boundingObject USE WHEEL
+        physics Physics {
+        }
+        linearVelocity 0.016732427121081837 0.024168796089105146 0.00018212821517847743
+        angularVelocity -0.8085312657580574 0.5604546708580933 -0.0011214250191464968
+      }
+    }
+    DEF body Shape {
+      appearance PBRAppearance {
+        baseColor 0 0 1
+      }
+      geometry Box {
+        size 0.05 0.05 0.07
+      }
+    }
+  ]
+  boundingObject USE body
+  physics Physics {
+    density -1
+    mass 10
+  }
+  controller "ccc"
+  linearVelocity 0.014884642719911792 0.0207849462481254 0.0005504499375288309
+  angularVelocity 0.02110260573952839 0.0021651142790293596 -0.003942021870313952
+}
