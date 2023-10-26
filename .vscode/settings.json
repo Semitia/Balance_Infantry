@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "ctrl.h": "c",
+        "dormily.h": "c",
+        "stdio.h": "c",
+        "matrix.h": "c"
+    }
+}

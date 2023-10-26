@@ -7,8 +7,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.24851396468938414 0.011869814508130455 0.9685555827405602 1.9305038961701486
-  position 0.7600525972067428 -0.5574541728984785 0.5217095129863013
+  orientation 0.11569254522180486 -0.5781288097347712 0.8077018721872306 0.8314361947163936
+  position 0.07507026871885247 0.6107323214593312 -0.029117679521809135
 }
 TexturedBackground {
 }
@@ -17,9 +17,22 @@ TexturedBackgroundLight {
 CircleArena {
 }
 Robot {
-  translation 0.08486921085834867 0.4515109566390916 0.05891793018830623
-  rotation 0.9538694510478145 -0.29149580134244296 0.0718558846404949 -2.669268537001716
+  translation 0.33342989466220246 0.8678345116104149 0.06610659970005149
+  rotation 0.9650365724876662 -0.2612898376712772 0.02078543939816571 -2.366556611958606
   children [
+    Gyro {
+      translation 0 -0.01 -0.04
+      children [
+        Shape {
+          appearance PBRAppearance {
+            baseColor 1 0 0.498039
+          }
+          geometry Box {
+            size 0.01 0.01 0.01
+          }
+        }
+      ]
+    }
     Solid {
       translation 0 0 0.024
       children [
@@ -34,6 +47,8 @@ Robot {
       name "holder"
       boundingObject USE holder
       physics Physics {
+        density -1
+        mass 1
       }
     }
     Solid {
@@ -53,7 +68,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 6818.103949980189
+        position 9018.833781637379
         anchor 0 0 0.04
       }
       device [
@@ -62,8 +77,8 @@ Robot {
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation -0.039973100000000004 -0.0026922330750612225 0.037846606470747356
-        rotation 0.5426230909698179 -0.6415139230868039 0.5422361732973363 4.2832473907423125
+        translation -0.0399728273342404 0.00227453267280313 0.037398819813797134
+        rotation -0.10519127672077273 -0.9888950486936673 -0.10498275082604432 4.702102051530119
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -82,9 +97,9 @@ Robot {
         name "solid(2)"
         boundingObject USE WHEEL
         physics Physics {
+          density -1
+          mass 1
         }
-        linearVelocity 0.016760553860267532 0.024208542016590503 0.00011680351687855993
-        angularVelocity -0.8085315122243727 0.5604580753243367 -0.0011176252633091866
       }
     }
     InertialUnit {
@@ -103,7 +118,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 9541.67189687533
+        position 6857.019275935228
         anchor 0 0 0.04
       }
       device [
@@ -112,8 +127,8 @@ Robot {
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation 0.03995299999999999 -0.0018086458946025602 0.037032809994483454
-        rotation -0.4664804655412744 0.7515627720443206 -0.46642188514847005 1.8514144880802086
+        translation 0.039982831982230196 -0.0027098777153883374 0.04219536724112737
+        rotation -0.7034583914641952 0.10560181746667512 -0.702847456868375 2.9303292964391825
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -132,9 +147,9 @@ Robot {
         name "solid(1)"
         boundingObject USE WHEEL
         physics Physics {
+          density -1
+          mass 1
         }
-        linearVelocity 0.016732427121081837 0.024168796089105146 0.00018212821517847743
-        angularVelocity -0.8085312657580574 0.5604546708580933 -0.0011214250191464968
       }
     }
     DEF body Shape {
@@ -152,6 +167,9 @@ Robot {
     mass 10
   }
   controller "ccc"
-  linearVelocity 0.014884642719911792 0.0207849462481254 0.0005504499375288309
-  angularVelocity 0.02110260573952839 0.0021651142790293596 -0.003942021870313952
+  controllerArgs [
+    ""
+  ]
+  linearVelocity 0.0018294018285202598 0.004972010610607122 -0.0023960292353193908
+  angularVelocity -0.07005941202978122 0.028104578200429935 0.004228434672358639
 }
