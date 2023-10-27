@@ -12,6 +12,6 @@
 #include <webots/gyro.h>
 #include <webots/position_sensor.h>
 #include <webots/display.h>
-#define TIME_STEP 64
+#define TIME_STEP 10
 
 #endif

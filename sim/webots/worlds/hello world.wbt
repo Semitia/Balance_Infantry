@@ -7,8 +7,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.22665003182828955 -0.10960015694119173 -0.9677900436926915 4.342074265438079
-  position -0.6581313614606281 -1.0005605899040988 0.5093262426878923
+  orientation -0.054158131604701905 0.011926235072899583 -0.9984611468144736 1.648718892561253
+  position -0.6900521779628044 0.32929608693112417 0.19569819250096274
 }
 TexturedBackground {
 }
@@ -17,11 +17,12 @@ TexturedBackgroundLight {
 CircleArena {
 }
 Robot {
-  translation -0.8697196715897882 -0.3812574820555541 0.06044305145311368
-  rotation 0.69587882568451 -0.6946896211076792 0.18209610179577349 -2.7903033667064583
+  translation -0.7720654702348138 -0.3346808350542369 0.03356652587121255
+  rotation 0.6824709248538452 -0.6853007371074427 -0.254158093416544 2.645805499653735
   children [
     Display {
-      width 128
+      width 512
+      height 256
     }
     Gyro {
       translation 0 -0.01 -0.04
@@ -37,7 +38,7 @@ Robot {
       ]
     }
     Solid {
-      translation 0 0 0.024
+      translation 0 0 -0.024
       children [
         DEF holder Shape {
           appearance PBRAppearance {
@@ -69,19 +70,22 @@ Robot {
       ]
       name "head"
     }
-    HingeJoint {
+    DEF wheel1 HingeJoint {
       jointParameters HingeJointParameters {
-        position 12262.3809961845
-        anchor 0 0 0.04
+        position 31133.282467998262
+        anchor 0 0 -0.04
       }
       device [
+        PositionSensor {
+          name "position_sensor1"
+        }
         RotationalMotor {
           name "motor1"
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation -0.039972800000000024 0 0.04
-        rotation -0.5897232210774088 -0.5524025839360295 -0.5891331833998857 4.151615237054445
+        translation -0.03997280000000001 0 -0.04
+        rotation 0.6609708500525312 -0.3563136603539365 0.6604226758872033 3.826869820408306
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -103,8 +107,8 @@ Robot {
           density -1
           mass 1
         }
-        linearVelocity -2.0846349911948805e-05 6.053757595643096e-05 -1.081418349258469e-06
-        angularVelocity -5.8944405731726005e-05 -9.999730634068044 0.06646959065341213
+        linearVelocity -7.876928204445155e-09 -3.858075113240176e-08 2.1455725517665286e-08
+        angularVelocity 0.04142023928502986 9.9999142171413 0.00011714576007524865
       }
     }
     InertialUnit {
@@ -121,19 +125,22 @@ Robot {
       ]
       name "imu"
     }
-    HingeJoint {
+    DEF wheel2 HingeJoint {
       jointParameters HingeJointParameters {
-        position 10100.566152658119
-        anchor 0 0 0.04
+        position 28971.457119070055
+        anchor 0 0 -0.04
       }
       device [
+        PositionSensor {
+          name "position_sensor2"
+        }
         RotationalMotor {
           name "motor2"
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation 0.03998279999999999 0 0.04
-        rotation -0.5462364478588859 0.6352087717974116 -0.5460179111184271 2.0085695597867983
+        translation 0.03998279999999999 0 -0.04
+        rotation -0.45343852754341757 -0.7677851907022452 -0.4526581521165554 4.451809368476734
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -155,8 +162,8 @@ Robot {
           density -1
           mass 1
         }
-        linearVelocity -2.0886133435169624e-05 6.055170213033997e-05 -1.32672805693807e-06
-        angularVelocity -0.00010209639252413599 -9.999729404711651 0.06645924156654284
+        linearVelocity 7.57569163299694e-09 -3.864424974854924e-08 -2.1442251109319857e-08
+        angularVelocity 0.041425879609949784 9.999914193735538 0.00012067099349355168
       }
     }
     DEF body Shape {
@@ -177,6 +184,6 @@ Robot {
   controllerArgs [
     ""
   ]
-  linearVelocity -1.969587895634752e-05 6.036230553809219e-05 -5.772060681424178e-07
-  angularVelocity 6.48475425738123e-06 3.509297436258156e-05 -1.832594690116904e-06
+  linearVelocity -8.997976489278813e-11 -2.178647891636853e-08 8.268133652481167e-17
+  angularVelocity 5.56302529042725e-07 -2.2975792679714732e-09 3.546004103981661e-08
 }

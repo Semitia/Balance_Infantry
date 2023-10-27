@@ -3,9 +3,9 @@
 
 #include "sys.h"
 
-#define MAX_WIDTH 128
-#define MAX_HEIGHT 64
-#define RING_SIZE 128
+#define MAX_WIDTH 512
+#define MAX_HEIGHT 256
+#define RING_SIZE MAX_WIDTH
 #define CHANNEL_NUM 4
 
 /**
@@ -62,8 +62,8 @@ void updateDis(Display_t *D);
 */
 void pushPoint(RingBuf_t *R, Point_t P) {
     R->head = (R->head+1) % RING_SIZE;      
-    printf("DEBUG: head:%d, tail:%d, x:%d, y:%d\n", R->head, R->tail, P.x, P.y);
-    if(R->head == R->tail) {R->tail = (R->tail+1) % RING_SIZE;printf("???\n");} //如果满了，就覆盖最早的数据
+    //printf("DEBUG: head:%d, tail:%d, x:%d, y:%d\n", R->head, R->tail, P.x, P.y);
+    if(R->head == R->tail) R->tail = (R->tail+1) % RING_SIZE;//如果满了，就覆盖最早的数据
     R->Points[R->head] = P;                     //保证head对应最新数据
     return;
 }
@@ -123,8 +123,10 @@ void displayInit(Display_t *D) {
         D->Channels[i].R.tail = 0;
     }
 
-    channelEnable(D, 0, 0x0000ff, 2);
-    //channelEnable(D, 1, 0xff0000, 1);
+    channelEnable(D, 0, 0x00ff00, PI);
+    channelEnable(D, 1, 0xffff00, PI);
+    // channelEnable(D, 2, 0x00ff00, 1);
+    // channelEnable(D, 3, 0xffff00, 1);
     return;
 }
 
@@ -157,6 +159,7 @@ void addDisData(Display_t *D) {
         //再在最右侧添加新的数据
         p.x = D->width - 1;
         p.y = linearMap(D->data[i], D->Channels[i].range, -D->Channels[i].range, D->height - 1, 0);
+        p.y = D->height - p.y;  // 原点在左上角, 纵坐标反一下
         pushPoint(&D->Channels[i].R, p);
     }
     return;
@@ -181,27 +184,18 @@ void updateDis(Display_t *D) {
         if(!channel->enable) continue; 
         wb_display_set_color(D->tag, channel->color);
 
-        // // 遍历环形缓存器中的每个点
-        // int index = channel->R.tail;
-        // while (index != channel->R.head) {
-        //     Point_t point = channel->R.Points[index];
-        //     wb_display_draw_pixel(D->tag, point.x, point.y);           // 绘制点
-        //     // 移动到下一个点
-        //     index = (index + 1) % RING_SIZE;
-        // }
-        //从head向前遍历WIDTH个点
-        int index = channel->R.head;
-        for(int j=0; j<MAX_WIDTH; j++) {
-            int next_idx;
-            index = (index-1+RING_SIZE) % RING_SIZE;
-            next_idx = (index-1+RING_SIZE) % RING_SIZE;
+        //从tail+1遍历到head, +1是为了避免在绘制线的时候最开始的一个点带来的波形突变
+        for(int index = channel->R.tail+1; index != channel->R.head; index = (index+1) % RING_SIZE) {
+            int next_idx = (index+1) % RING_SIZE;
             Point_t point = channel->R.Points[index];
-            Point_t next_point = channel->R.Points[next_idx];
-            wb_display_draw_pixel(D->tag, point.x, point.y);           // 绘制点
-            //wb_display_draw_line(D->tag, point.x, point.y, next_point.x, next_point.y); //前后两点连线
-            //printf("x:%d y:%d, Next_x:%d Next_y:%d\n", point.x, point.y, next_point.x, next_point.y);
+            Point_t next_point = channel->R.Points[next_idx];      
+            wb_display_draw_line(D->tag, point.x, point.y, next_point.x, next_point.y); // 绘制线
+            //wb_display_draw_pixel(D->tag, point.x, point.y);                          // 绘制像素点
         }
-        
+        //绘制坐标系
+        wb_display_set_color(D->tag, 0x646464);
+        wb_display_draw_line(D->tag, 0, D->height/2, D->width, D->height/2);//x轴
+        wb_display_draw_line(D->tag, D->width/2, 0, D->width/2, D->height);//y轴
     }
     return;
 }

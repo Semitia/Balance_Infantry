@@ -15,8 +15,8 @@ typedef struct __Dormily_t {
     WbDeviceTag wheels[2];                  // 机器人轮子
     WbDeviceTag pos_ss[2];                  // 机器人电机位置传感器
 
-    double pitch, roll, yaw;                // 机器人姿态
-    double pitch_vel, roll_vel, yaw_vel;    // 机器人姿态角速度
+    double pitch, roll, yaw;                // 机器人姿态 rad
+    double pitch_vel, roll_vel, yaw_vel;    // 机器人姿态角速度 rad/s
     double vx, vy, w;                       // 机器人速度
     double px, py, pz;                      // 机器人位置
     LQR_t LQR;                              // LQR控制器
@@ -31,24 +31,21 @@ typedef struct __Dormily_t {
 void Dormily_init(Dormily_t *D) {
     //display
     displayInit(&D->display);
-
     //imu
     D->imu = wb_robot_get_device("imu");
     wb_inertial_unit_enable(D->imu, TIME_STEP);
     D->gyro= wb_robot_get_device("gyro");
-    wb_inertial_unit_enable(D->gyro, TIME_STEP);
-
+    wb_gyro_enable(D->gyro, TIME_STEP);
     //motor
     D->wheels[0] = wb_robot_get_device("motor1");
     D->wheels[1] = wb_robot_get_device("motor2");
-    wb_motor_set_position(D->wheels[0], INFINITY);
-    wb_motor_set_position(D->wheels[1], INFINITY);
-
-    D->pos_ss[0] = wb_motor_get_position_sensor(D->wheels[0]);
-    D->pos_ss[1] = wb_motor_get_position_sensor(D->wheels[1]);
+    // wb_motor_set_position(D->wheels[0], 0);
+    // wb_motor_set_position(D->wheels[1], 0);
+    //position sensor
+    D->pos_ss[0] = wb_robot_get_device("position_sensor1");
+    D->pos_ss[1] = wb_robot_get_device("position_sensor2");
     wb_position_sensor_enable(D->pos_ss[0], TIME_STEP);
     wb_position_sensor_enable(D->pos_ss[1], TIME_STEP);
-
     // LQR
     double A[4][INV] = {{0,1,0,0},{432.353,0,0,0},{0,0,0,1},{-4.9,0,0,0}},
         B[4][INV] = {{0},{-7.353},{0},{0.25}},
@@ -102,6 +99,18 @@ void updateState(Dormily_t *D) {
 }
 
 /**
+ * @brief 绘制机器人数据波形
+*/
+void drawData(Dormily_t *D) {
+    D->display.data[0] = D->pitch;
+    D->display.data[1] = D->pitch_vel;
+    printf( "pitch: %.3f, vel: %.3f\n", D->pitch, D->pitch_vel);
+    addDisData(&D->display);
+    updateDis(&D->display);
+    return;
+}
+
+/**
  * @brief control loop for Dormily
 */
 void dormilyCtrl(Dormily_t *D) {
@@ -116,5 +125,7 @@ void balanceCtrl(Dormily_t *D){
     calcLQR(&D->LQR);
     return;
 }
+
+
 
 #endif // __DORMILY_H__

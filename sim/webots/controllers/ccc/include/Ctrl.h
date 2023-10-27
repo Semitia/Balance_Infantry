@@ -4,5 +4,6 @@
 /* my object lib */
 #include "Dormily.h"
 
+void keyInput(void);
 
 #endif // __CTRL_H__

@@ -4,6 +4,8 @@
         "dormily.h": "c",
         "stdio.h": "c",
         "matrix.h": "c",
-        "sys.h": "c"
+        "sys.h": "c",
+        "lqr.h": "c",
+        "math.h": "c"
     }
 }
