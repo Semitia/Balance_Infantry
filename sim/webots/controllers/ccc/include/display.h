@@ -4,8 +4,8 @@
 #include "sys.h"
 
 #define MAX_WIDTH 128
-#define MAX_HEIGHT 128
-#define RING_SIZE MAX_WIDTH
+#define MAX_HEIGHT 64
+#define RING_SIZE 128
 #define CHANNEL_NUM 4
 
 /**
@@ -39,7 +39,7 @@ typedef struct __Channel_t {
 */
 typedef struct __Display_t {
     int width, height;                  // 显示器宽高
-    WbDeviceTag id;                     // 显示器ID
+    WbDeviceTag tag;                     // 显示器tag
     Channel_t Channels[CHANNEL_NUM];    // 通道
     double data[CHANNEL_NUM];           // 各个通道最新数据
 }Display_t;
@@ -61,11 +61,10 @@ void updateDis(Display_t *D);
  * @param P 点
 */
 void pushPoint(RingBuf_t *R, Point_t P) {
-    if((R->head+1 % RING_SIZE) == R->tail) {
-        R->tail = (R->tail+1) % RING_SIZE;
-    }
-    R->Points[R->head] = P;
-    R->head = (R->head+1) % RING_SIZE;
+    R->head = (R->head+1) % RING_SIZE;      
+    printf("DEBUG: head:%d, tail:%d, x:%d, y:%d\n", R->head, R->tail, P.x, P.y);
+    if(R->head == R->tail) {R->tail = (R->tail+1) % RING_SIZE;printf("???\n");} //如果满了，就覆盖最早的数据
+    R->Points[R->head] = P;                     //保证head对应最新数据
     return;
 }
 
@@ -78,7 +77,7 @@ uint8_t ringHasMsg(RingBuf_t *R) {
     if(R->head == R->tail) {
         return 0;
     } else {
-        return 1;
+        return ((R->head + RING_SIZE - R->tail) % RING_SIZE);
     }
 }
 
@@ -109,16 +108,23 @@ void channelEnable(Display_t *D, int channel_id, uint32_t color, double range) {
  * @param name 显示器名字
 */
 void displayInit(Display_t *D) {
-    D->id = wb_robot_get_device("display");
-    D->height = wb_display_get_height(D->id);
-    D->width = wb_display_get_width(D->id);
-    if (D->id == 0) {
+    D->tag = wb_robot_get_device("display");
+    D->height = wb_display_get_height(D->tag);
+    D->width = wb_display_get_width(D->tag);
+    if (D->tag == 0) {
         printf("Error: Can't find the display");
         return;
     }
-    else { printf("Display found!\n"); }
-    channelEnable(D, 0, 0x0000ff, 1);
-    channelEnable(D, 1, 0xff0000, 1);
+    else { printf("Display found! %d x %d\n", D->width, D->height); }
+
+    for(int i=0; i<CHANNEL_NUM; i++) {
+        D->Channels[i].enable = false;
+        D->Channels[i].R.head = 0;
+        D->Channels[i].R.tail = 0;
+    }
+
+    channelEnable(D, 0, 0x0000ff, 2);
+    //channelEnable(D, 1, 0xff0000, 1);
     return;
 }
 
@@ -160,26 +166,40 @@ void addDisData(Display_t *D) {
  * @brief 屏幕刷新一次
  * @note 屏幕滚动式示波，最右侧的数据代表最新的数据，
  *       每次刷新，所有的数据都向左移动一个像素
+ *       原点在左上角
  * @param D 显示器指针
 */
 void updateDis(Display_t *D) {
     // 清空显示器
-    wb_display_fill_rectangle(D->id, 0, 0, D->width, D->height);
+    wb_display_set_color(D->tag, 0x000000);         //记得修改画笔颜色
+    wb_display_fill_rectangle(D->tag, 0, 0, D->width, D->height);
 
     // 遍历每个通道
     for (int i = 0; i < CHANNEL_NUM; i++) {
         Channel_t *channel = &D->Channels[i];
         // 如果通道被使能，则绘制通道的数据
         if(!channel->enable) continue; 
-        wb_display_set_color(D->id, channel->color);
+        wb_display_set_color(D->tag, channel->color);
 
-        // 遍历环形缓存器中的每个点
-        int index = channel->R.tail;
-        while (index != channel->R.head) {
+        // // 遍历环形缓存器中的每个点
+        // int index = channel->R.tail;
+        // while (index != channel->R.head) {
+        //     Point_t point = channel->R.Points[index];
+        //     wb_display_draw_pixel(D->tag, point.x, point.y);           // 绘制点
+        //     // 移动到下一个点
+        //     index = (index + 1) % RING_SIZE;
+        // }
+        //从head向前遍历WIDTH个点
+        int index = channel->R.head;
+        for(int j=0; j<MAX_WIDTH; j++) {
+            int next_idx;
+            index = (index-1+RING_SIZE) % RING_SIZE;
+            next_idx = (index-1+RING_SIZE) % RING_SIZE;
             Point_t point = channel->R.Points[index];
-            wb_display_draw_pixel(D->id, point.x, point.y);           // 绘制点
-            // 移动到下一个点
-            index = (index + 1) % RING_SIZE;
+            Point_t next_point = channel->R.Points[next_idx];
+            wb_display_draw_pixel(D->tag, point.x, point.y);           // 绘制点
+            //wb_display_draw_line(D->tag, point.x, point.y, next_point.x, next_point.y); //前后两点连线
+            //printf("x:%d y:%d, Next_x:%d Next_y:%d\n", point.x, point.y, next_point.x, next_point.y);
         }
         
     }

@@ -8,4 +8,4 @@ orthographicViewHeight: 1
 textFiles: 0 "controllers/ccc/ccc.c"
 globalOptionalRendering: CoordinateSystem
 consoles: Console:All:All
-renderingDevicePerspectives: robot:display;1;4.98438;0.010274;0
+renderingDevicePerspectives: robot:display;1;3.35938;0.018221;0
