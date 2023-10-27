@@ -8,7 +8,6 @@
 #define RING_SIZE MAX_WIDTH
 #define CHANNEL_NUM 4
 
-
 /**
  * @brief 点结构体
 */
@@ -24,6 +23,36 @@ typedef struct __RingBuf_t {
     Point_t Points[RING_SIZE];
     short head, tail;
 }RingBuf_t;
+
+/**
+ * @brief 显示器的一个数据通道
+*/
+typedef struct __Channel_t {
+    bool enable;            // 通道使能, 0:不使能 1:使能
+    uint32_t color;         // 颜色
+    RingBuf_t R;            // 环形缓存器
+    double range;           // 数据上下限 -range ~ +range
+}Channel_t;
+
+/**
+ * @brief 显示器结构体
+*/
+typedef struct __Display_t {
+    int width, height;                  // 显示器宽高
+    WbDeviceTag id;                     // 显示器ID
+    Channel_t Channels[CHANNEL_NUM];    // 通道
+    double data[CHANNEL_NUM];           // 各个通道最新数据
+}Display_t;
+
+void pushPoint(RingBuf_t *R, Point_t P);
+uint8_t ringHasMsg(RingBuf_t *R);
+Point_t popPoint(RingBuf_t *R);
+void channelEnable(Display_t *D, int channel_id, uint32_t color, double range);
+void displayInit(Display_t *D);
+int linearMap(double data, double raw_up, double raw_down, int up, int down);
+void addDisData(Display_t *D);
+void updateDis(Display_t *D);
+
 
 /**
  * @brief 添加数据
@@ -65,26 +94,6 @@ Point_t popPoint(RingBuf_t *R) {
 }
 
 /**
- * @brief 显示器的一个数据通道
-*/
-typedef struct __Channel_t {
-    bool enable;            // 通道使能, 0:不使能 1:使能
-    uint32_t color;         // 颜色
-    RingBuf_t R;            // 环形缓存器
-    double range;           // 数据上下限
-}Channel_t;
-
-/**
- * @brief 显示器结构体
-*/
-typedef struct __Display_t {
-    int width, height;
-    char *name;
-    WbDeviceTag id;
-    Channel_t Channels[CHANNEL_NUM];
-}Display_t;
-
-/**
  * @brief 使能显示器的某个通道
 */
 void channelEnable(Display_t *D, int channel_id, uint32_t color, double range) {
@@ -99,13 +108,17 @@ void channelEnable(Display_t *D, int channel_id, uint32_t color, double range) {
  * @param D 显示器指针
  * @param name 显示器名字
 */
-void displayInit(Display_t *D, char *name) {
-    D->id = wb_robot_get_device(name);
+void displayInit(Display_t *D) {
+    D->id = wb_robot_get_device("display");
     D->height = wb_display_get_height(D->id);
     D->width = wb_display_get_width(D->id);
-    D->name = name;
-
-
+    if (D->id == 0) {
+        printf("Error: Can't find the display");
+        return;
+    }
+    else { printf("Display found!\n"); }
+    channelEnable(D, 0, 0x0000ff, 1);
+    channelEnable(D, 1, 0xff0000, 1);
     return;
 }
 
@@ -124,8 +137,10 @@ int linearMap(double data, double raw_up, double raw_down, int up, int down) {
 
 /**
  * @brief 向各个通道添加数据
+ * @param D 显示器指针
+ * @param data 数据
 */
-void addDisData(Display_t *D, double data[CHANNEL_NUM]) {
+void addDisData(Display_t *D) {
     Point_t p;
     for (int i = 0; i < CHANNEL_NUM; i++) {
         if (!D->Channels[i].enable) continue;
@@ -135,7 +150,7 @@ void addDisData(Display_t *D, double data[CHANNEL_NUM]) {
         }
         //再在最右侧添加新的数据
         p.x = D->width - 1;
-        p.y = linearMap(data[i], D->Channels[i].range, -D->Channels[i].range, D->height - 1, 0);
+        p.y = linearMap(D->data[i], D->Channels[i].range, -D->Channels[i].range, D->height - 1, 0);
         pushPoint(&D->Channels[i].R, p);
     }
     return;

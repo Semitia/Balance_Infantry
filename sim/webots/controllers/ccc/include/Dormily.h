@@ -20,7 +20,7 @@ typedef struct __Dormily_t {
     double vx, vy, w;                       // 机器人速度
     double px, py, pz;                      // 机器人位置
     LQR_t LQR;                              // LQR控制器
-
+    Display_t display;                      // 显示器
 } Dormily_t;
 
 /**
@@ -29,6 +29,9 @@ typedef struct __Dormily_t {
  * @param D 机器人结构体指针
 */
 void Dormily_init(Dormily_t *D) {
+    //display
+    displayInit(&D->display);
+
     //imu
     D->imu = wb_robot_get_device("imu");
     wb_inertial_unit_enable(D->imu, TIME_STEP);

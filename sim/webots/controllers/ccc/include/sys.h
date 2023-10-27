@@ -3,6 +3,7 @@
 
 /* std lib */
 #include <stdio.h>
+#include <stdint.h>
 /* webots lib*/
 #include <webots/robot.h>
 #include <webots/motor.h>
