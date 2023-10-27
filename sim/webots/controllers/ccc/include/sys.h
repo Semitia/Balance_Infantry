@@ -10,7 +10,7 @@
 #include <webots/keyboard.h>
 #include <webots/gyro.h>
 #include <webots/position_sensor.h>
-
+#include <webots/display.h>
 #define TIME_STEP 64
 
 #endif

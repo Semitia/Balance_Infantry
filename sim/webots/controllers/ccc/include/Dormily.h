@@ -3,6 +3,7 @@
 
 #include "LQR.h"
 #include "sys.h"
+#include "display.h"
 
 /**
  * @brief Dormily_t
@@ -88,7 +89,7 @@ void updateState(Dormily_t *D) {
     D->w = (D->vy - D->vx) / 0.1;
     D->px = wb_position_sensor_get_value(D->pos_ss[0]);
     D->py = wb_position_sensor_get_value(D->pos_ss[1]);
-    
+
     //lqr
     D->LQR.x.matrix[0][0] = D->pitch;
     D->LQR.x.matrix[1][0] = D->pitch_vel;

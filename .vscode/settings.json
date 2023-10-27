@@ -3,6 +3,7 @@
         "ctrl.h": "c",
         "dormily.h": "c",
         "stdio.h": "c",
-        "matrix.h": "c"
+        "matrix.h": "c",
+        "sys.h": "c"
     }
 }
