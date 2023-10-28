@@ -7,8 +7,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.054158131604701905 0.011926235072899583 -0.9984611468144736 1.648718892561253
-  position -0.6900521779628044 0.32929608693112417 0.19569819250096274
+  orientation -0.06512836444340865 -0.01262847753141329 0.997796982206383 2.3756960484792855
+  position 0.6261976722878508 -0.5468277134972205 0.25194443100943836
 }
 TexturedBackground {
 }
@@ -17,8 +17,8 @@ TexturedBackgroundLight {
 CircleArena {
 }
 Robot {
-  translation -0.7720654702348138 -0.3346808350542369 0.03356652587121255
-  rotation 0.6824709248538452 -0.6853007371074427 -0.254158093416544 2.645805499653735
+  translation -0.00016429232600972114 0.027667312744022947 0.060540838152974744
+  rotation 9.800059869743203e-05 -0.261407834040444 0.9652284365362254 -3.140877368752801
   children [
     Display {
       width 512
@@ -72,8 +72,9 @@ Robot {
     }
     DEF wheel1 HingeJoint {
       jointParameters HingeJointParameters {
-        position 31133.282467998262
+        position 26689.28886019842
         anchor 0 0 -0.04
+        dampingConstant 0.03
       }
       device [
         PositionSensor {
@@ -81,11 +82,12 @@ Robot {
         }
         RotationalMotor {
           name "motor1"
+          maxTorque 2
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation -0.03997280000000001 0 -0.04
-        rotation 0.6609708500525312 -0.3563136603539365 0.6604226758872033 3.826869820408306
+        translation -0.0399728 0 -0.04
+        rotation -0.6784347281884371 -0.2834040461993033 -0.67779677351382 3.6942402654399906
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -107,8 +109,8 @@ Robot {
           density -1
           mass 1
         }
-        linearVelocity -7.876928204445155e-09 -3.858075113240176e-08 2.1455725517665286e-08
-        angularVelocity 0.04142023928502986 9.9999142171413 0.00011714576007524865
+        linearVelocity -5.215789827844203e-12 7.380585712669583e-12 2.2095438070360843e-16
+        angularVelocity -5.922166810717385e-10 -4.0572367920255937e-13 2.2237158089417884e-10
       }
     }
     InertialUnit {
@@ -127,8 +129,9 @@ Robot {
     }
     DEF wheel2 HingeJoint {
       jointParameters HingeJointParameters {
-        position 28971.457119070055
+        position 26856.483500066246
         anchor 0 0 -0.04
+        dampingConstant 0.03
       }
       device [
         PositionSensor {
@@ -136,11 +139,12 @@ Robot {
         }
         RotationalMotor {
           name "motor2"
+          maxTorque 2
         }
       ]
       endPoint DEF wheel1 Solid {
-        translation 0.03998279999999999 0 -0.04
-        rotation -0.45343852754341757 -0.7677851907022452 -0.4526581521165554 4.451809368476734
+        translation 0.03998279999999986 0 -0.04
+        rotation 0.7008342385817854 -0.1359983816458622 0.7002398233613936 3.412818073940193
         children [
           DEF WHEEL Shape {
             appearance PBRAppearance {
@@ -162,8 +166,8 @@ Robot {
           density -1
           mass 1
         }
-        linearVelocity 7.57569163299694e-09 -3.864424974854924e-08 -2.1442251109319857e-08
-        angularVelocity 0.041425879609949784 9.999914193735538 0.00012067099349355168
+        linearVelocity -5.2032476067007295e-12 -1.039997122399958e-11 -2.0693192597458523e-16
+        angularVelocity 7.42550730187164e-10 5.195709384708825e-13 2.2237688507306992e-10
       }
     }
     DEF body Shape {
@@ -175,6 +179,7 @@ Robot {
       }
     }
   ]
+  name "Dormily"
   boundingObject USE body
   physics Physics {
     density -1
@@ -184,6 +189,6 @@ Robot {
   controllerArgs [
     ""
   ]
-  linearVelocity -8.997976489278813e-11 -2.178647891636853e-08 8.268133652481167e-17
-  angularVelocity 5.56302529042725e-07 -2.2975792679714732e-09 3.546004103981661e-08
+  linearVelocity -9.656638431115534e-13 -1.5057369221402773e-12 4.1340668262405834e-16
+  angularVelocity 6.90291318655197e-15 -2.6675295938923417e-15 2.22380018751767e-10
 }

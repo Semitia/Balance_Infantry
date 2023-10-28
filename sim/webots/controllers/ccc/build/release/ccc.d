@@ -9,4 +9,6 @@ build/release/ccc.o: ccc.c include/Ctrl.h include/Dormily.h include/LQR.h \
  D:\WORK\SOFTWARES\webots\Webots/include/controller/c/webots/gyro.h \
  D:\WORK\SOFTWARES\webots\Webots/include/controller/c/webots/position_sensor.h \
  D:\WORK\SOFTWARES\webots\Webots/include/controller/c/webots/display.h \
+ D:\WORK\SOFTWARES\webots\Webots/include/controller/c/webots/supervisor.h \
+ D:\WORK\SOFTWARES\webots\Webots/include/controller/c/webots/contact_point.h \
  include/display.h

@@ -5,5 +5,5 @@
 #include "Dormily.h"
 
 void keyInput(void);
-
+void hardwareCheck(void);
 #endif // __CTRL_H__
