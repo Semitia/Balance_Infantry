@@ -78,7 +78,7 @@ void Dormily_init(Dormily_t *D) {
     // LQR
     double A[4][INV] = {{0,1,0,0},{432.353,0,0,0},{0,0,0,1},{-4.9,0,0,0}},
         B[4][INV] = {{0},{-7.353},{0},{0.25}},
-        K[1][INV] = {{-126.0532, -6.9019, -3.1623, -7.3078}};
+        K[1][INV] = {{-150.0532, -5.9019, -56.6623, -80.3078}};
     D->LQR.x = matrix_init2(4, 1);
     D->LQR.u = matrix_init2(1, 1);
     D->LQR.A = matrix_init(4, 4, A);
@@ -138,14 +138,19 @@ void updateState(Dormily_t *D) {
 */
 void drawData(Dormily_t *D) {
     D->display.data[0] = D->pitch;
-    D->display.data[1] = D->motor_torque_out[0];
-    D->display.data[2] = D->wheel_vel[0];
-    channelEnable(&D->display, 0, 0x00ff00, PI); //
-    channelEnable(&D->display, 1, 0xffff00, 5);
-    channelEnable(&D->display, 2, 0xffffff, 30);
+    D->display.data[1] = D->pitch_vel;
+    D->display.data[2] = D->px;
+    D->display.data[3] = D->vx;
+    D->display.data[4] = D->motor_torque_out[0];
+
+    channelEnable(&D->display, 0, 0x00ff00, PI/5);        //绿色，pitch
+    // channelEnable(&D->display, 1, 0xffff00, 10);        //黄色, pitch_vel
+    channelEnable(&D->display, 2, 0xffffff, 2);         //白色, px
+    channelEnable(&D->display, 3, 0xff0000, 1);         //红色. vx
+    // channelEnable(&D->display, 4, 0x0000ff, 3);         //蓝色, motor_torque_out
     addDisData(&D->display);
     updateDis(&D->display);
-    printf("pitch:%f, torque:%f, vel:%f\n", D->pitch, D->motor_torque_out[0], D->wheel_vel[0]);
+    printf("pitch:%f, pitch_vel:%f, px:%f, vx:%f, torque:%f\n", D->pitch, D->pitch_vel, D->px, D->vx, D->motor_torque_out[0]);
     return;
 }
 
@@ -162,8 +167,8 @@ void balanceCtrl(Dormily_t *D){
 */
 void dormilyCtrl(Dormily_t *D) {
     balanceCtrl(D);
-    D->motor_torque_out[0] = D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
-    D->motor_torque_out[1] = D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
+    D->motor_torque_out[0] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
+    D->motor_torque_out[1] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
     setMotorTorque(D, D->motor_torque_out[0], D->motor_torque_out[1]);
     return;
 }

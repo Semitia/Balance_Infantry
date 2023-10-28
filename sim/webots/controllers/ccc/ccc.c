@@ -14,10 +14,10 @@ int main(int argc, char **argv) {
 
     keyInput();
     updateState(&Dormily);
-    Dormily.motor_torque_out[0] = torque[0];
-    Dormily.motor_torque_out[1] = torque[1];
-    setMotorTorque(&Dormily, Dormily.motor_torque_out[0], Dormily.motor_torque_out[1]);
-    //dormilyCtrl(&Dormily);
+    // Dormily.motor_torque_out[0] = torque[0];
+    // Dormily.motor_torque_out[1] = torque[1];
+    // setMotorTorque(&Dormily, Dormily.motor_torque_out[0], Dormily.motor_torque_out[1]);
+    dormilyCtrl(&Dormily);
     drawData(&Dormily);
 
     //double end_ts = wb_robot_get_time();

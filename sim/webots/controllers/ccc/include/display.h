@@ -6,7 +6,7 @@
 #define MAX_WIDTH 512
 #define MAX_HEIGHT 256
 #define RING_SIZE MAX_WIDTH
-#define CHANNEL_NUM 4
+#define CHANNEL_NUM 8
 
 /**
  * @brief 点结构体
