@@ -123,8 +123,8 @@ void displayInit(Display_t *D) {
         D->Channels[i].R.tail = 0;
     }
 
-    channelEnable(D, 0, 0x00ff00, PI);
-    channelEnable(D, 1, 0xffff00, PI);
+    channelEnable(D, 0, 0x00ff00, 10);
+    channelEnable(D, 1, 0xffff00, 20);
     // channelEnable(D, 2, 0x00ff00, 1);
     // channelEnable(D, 3, 0xffff00, 1);
     return;
