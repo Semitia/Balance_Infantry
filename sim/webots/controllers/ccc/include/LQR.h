@@ -10,6 +10,7 @@
 */
 typedef struct __LQR_t{
     Matrix_t x;             // state space
+    Matrix_t xd;            // desire state space 
     Matrix_t u;             // control space
     Matrix_t A;             // 状态转移矩阵
     Matrix_t B;             // 控制转移矩阵
@@ -19,7 +20,7 @@ typedef struct __LQR_t{
 void calcLQR(LQR_t *L) {
     
 
-    L->u = mul_matrix(L->K, L->x);
+    L->u = mul_matrix(L->K, sub_matrix(L->x,L->xd));
     return;
 }
 

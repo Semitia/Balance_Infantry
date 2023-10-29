@@ -2,8 +2,9 @@
 
 Dormily_t Dormily;
 Display_t display;
-
+bool on_off = 0;
 double torque[2] = {0, 0};
+
 int main(int argc, char **argv) {
   wb_robot_init();
   wb_keyboard_enable(TIME_STEP);
@@ -14,10 +15,7 @@ int main(int argc, char **argv) {
 
     keyInput();
     updateState(&Dormily);
-    // Dormily.motor_torque_out[0] = torque[0];
-    // Dormily.motor_torque_out[1] = torque[1];
-    // setMotorTorque(&Dormily, Dormily.motor_torque_out[0], Dormily.motor_torque_out[1]);
-    dormilyCtrl(&Dormily);
+    if(on_off) dormilyCtrl(&Dormily);
     drawData(&Dormily);
 
     //double end_ts = wb_robot_get_time();
@@ -37,12 +35,13 @@ void keyInput(void) {
         //printf("Forward\n");
         torque[0] = 1;
         torque[1] = 1;
+        Dormily.tar_vx = 0.3;
         break;
       case WB_KEYBOARD_DOWN:
         //printf("Backward\n");
         torque[0] = -1;
         torque[1] = -1;
-        
+        Dormily.tar_vx = -0.3;
         break;
       case WB_KEYBOARD_LEFT:
         //printf("Left\n");
@@ -79,17 +78,18 @@ void keyInput(void) {
         break;
 
       case 74: // J
-        
+        on_off = 1;
         break;
 
       case 70: // f
-
+        on_off = 0;
         break;
 
       default:
         //printf("Stop\n");
         torque[0] = 0;
         torque[1] = 0;
+        Dormily.tar_vx = 0;
         break;
     }
 }

@@ -24,6 +24,7 @@ typedef struct __Dormily_t {
     double pitch_vel, roll_vel, yaw_vel;    // 机器人姿态角速度 rad/s
     double wheel_vel[2], wheel_pos[2], wheel_last_pos[2];      // 机器人轮子速度和位置 rad/s. rad
     double vx, vy, w;                       // 机器人速度 m/s, m/s, rad/s
+    double tar_vx, tar_vy, tar_w;           // 机器人目标速度 m/s, m/s, rad/s
     double px, py, pz;                      // 机器人位置 m, m, m
     LQR_t LQR;                              // LQR控制器
     Display_t display;                      // 显示器
@@ -78,8 +79,9 @@ void Dormily_init(Dormily_t *D) {
     // LQR
     double A[4][INV] = {{0,1,0,0},{432.353,0,0,0},{0,0,0,1},{-4.9,0,0,0}},
         B[4][INV] = {{0},{-7.353},{0},{0.25}},
-        K[1][INV] = {{-150.0532, -5.9019, -56.6623, -80.3078}};
-    D->LQR.x = matrix_init2(4, 1);
+        K[1][INV] = {{-150.0532, -5.9019, -76.6623, -80.3078}};
+    D->LQR.x = matrix_init2(4, 1);//pitch , pitch_vel, px, vx
+    D->LQR.xd = matrix_init2(4, 1);
     D->LQR.u = matrix_init2(1, 1);
     D->LQR.A = matrix_init(4, 4, A);
     D->LQR.B = matrix_init(4, 1, B);
@@ -158,6 +160,7 @@ void drawData(Dormily_t *D) {
  * @brief balance control
 */
 void balanceCtrl(Dormily_t *D){
+
     calcLQR(&D->LQR);
     return;
 }
@@ -166,6 +169,9 @@ void balanceCtrl(Dormily_t *D){
  * @brief control loop for Dormily
 */
 void dormilyCtrl(Dormily_t *D) {
+    D->LQR.xd.matrix[0][0] = 0.2 *  D->tar_vx*D->tar_vx;
+    D->LQR.xd.matrix[3][0] = D->tar_vx;
+    D->LQR.xd.matrix[2][0] = D->px;
     balanceCtrl(D);
     D->motor_torque_out[0] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
     D->motor_torque_out[1] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
