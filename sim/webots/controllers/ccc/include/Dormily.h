@@ -117,6 +117,7 @@ void updateState(Dormily_t *D) {
     D->pitch_vel = gyro_data[0];
     D->roll_vel = gyro_data[1];
     D->yaw_vel = gyro_data[2];
+
     //motor
     D->wheel_pos[0] = wb_position_sensor_get_value(D->pos_ss[0]) - D->pos_bias[0];
     D->wheel_pos[1] = wb_position_sensor_get_value(D->pos_ss[1]) - D->pos_bias[1];

@@ -255,54 +255,6 @@ void force_calc(float extra_balance_force, float extra_leg_force, float *output_
   //平衡时的计算
   *output_force = -(10 + 1.8 + extra_leg_force + extra_balance_force) * 9.81;
 }
-// void ExecuteJump()
-// {
-//   float t = millis() / 1000.0f - start_time_; // Seconds since jump was commanded
-
-//   if (t < prep_time)
-//   {
-//     float x = 0;
-//     float y = stance_height;
-//     float theta, gamma;
-//     CartesianToThetaGamma(x, y, 1.0, theta, gamma);
-
-//     // Use gains with small stiffness and lots of damping
-//     struct LegGain gains = {50, 1.0, 50, 1.0};
-//     CommandAllLegs(theta, gamma, gains);
-//     // Serial << "Prep: +" << t << "s, y: " << y;
-//   }
-//   else if (t >= prep_time && t < prep_time + launch_time)
-//   {
-//     float x = 0;
-//     float y = jump_extension;
-//     float theta, gamma;
-//     CartesianToThetaGamma(x, y, 1.0, theta, gamma);
-
-//     // Use high stiffness and low damping to execute the jump
-//     struct LegGain gains = {240, 0.5, 240, 0.2};
-//     CommandAllLegs(theta, gamma, gains);
-//     // Serial << "Jump: +" << t << "s, y: " << y;
-//   }
-//   else if (t >= prep_time + launch_time && t < prep_time + launch_time + fall_time)
-//   {
-//     float x = 0;
-//     float y = fall_extension;
-//     float theta, gamma;
-//     CartesianToThetaGamma(x, y, 1.0, theta, gamma);
-
-//     // Use low stiffness and lots of damping to handle the fall
-//     struct LegGain gains = {50, 1.0, 50, 1.0};
-
-//     CommandAllLegs(theta, gamma, gains);
-//     // Serial << "Retract: +" << t << "s, y: " << y;
-//   }
-//   else
-//   {
-//     state = STOP;
-//     Serial.println("Jump Complete.");
-//   }
-//   // Serial << '\n';
-// }
 
 void fly_slope() //加速度计配合imu解算机器人加速度
 {
@@ -549,13 +501,7 @@ void LQR_Solve(float *virtual_torque)
   {
     virtual_torque[i] /= 2;
   }
-
-  // for (int i = 0; i < 6; i++)
-  // {
-  //   printf("state vector: %f   ", balance_infantry.state_vector[i]);
-  // }
-  // printf("target vector: %f", balance_infantry.target_vector[2]);
-  // printf("\n");
+  
 }
 
 void control_init()

@@ -35,13 +35,15 @@ void keyInput(void) {
         //printf("Forward\n");
         torque[0] = 1;
         torque[1] = 1;
-        Dormily.tar_vx = 0.3;
+        Dormily.tar_vx = 0.5;
+
         break;
       case WB_KEYBOARD_DOWN:
         //printf("Backward\n");
         torque[0] = -1;
         torque[1] = -1;
-        Dormily.tar_vx = -0.3;
+        Dormily.tar_vx = -0.5;
+
         break;
       case WB_KEYBOARD_LEFT:
         //printf("Left\n");
