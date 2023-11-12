@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "cecilia_ctrl.h": "c",
+        "cecilia.h": "c",
+        "lqr.h": "c",
+        "sys.h": "c",
+        "wb_peripherals.h": "c"
+    }
+}

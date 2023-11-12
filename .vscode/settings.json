@@ -7,6 +7,7 @@
         "sys.h": "c",
         "lqr.h": "c",
         "math.h": "c",
-        "arx.h": "c"
+        "arx.h": "c",
+        "stdint.h": "c"
     }
 }

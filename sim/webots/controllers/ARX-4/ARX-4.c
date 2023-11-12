@@ -6,43 +6,14 @@
  * Modifications:
  */
 
-#include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "include/arx.h"
-#include "include/print.h"
-#include "include/PID.h"
-#include "include/display.h"
-#include "include/motor.h"
-#include "include/position_sensor.h"
-#include "include/inertial_unit.h"
-#include "include/accelerometer.h"
-#include "include/gyro.h"
-#include "include/keyboard.h"
-#include "include/mouse.h"
-#include "include/types.h"
-#include "include/camera.h"
-#include "include/robot.h"
-#include "include/mathFuch.h"
-#include "include/display.h"
-#include "pid.h"
-
-#include "Balance.h"
-
-#define TIME_STEP 4
+#include "./include/arx.h"
+#include "my_lib/pid.h"
+#include "my_lib/scope.h"
+#include "my_lib/Balance.h"
 
 Balence_robot arx;
 
 double time = 0; //时实时间
-int status = 0;  //腿长,用来插值
-
-// //自己撸的数据可视化屏幕
-double display_abs[10][100] = {0};
-double display_ratio[10][100] = {0};
-char display_value[10][20] = {0}; //数值
 
 Balance balance_infantry;
 bool is_pos_init = false;
@@ -133,6 +104,31 @@ int main(int argc, char **argv)
 
   return 0;
 }
+
+//初始化函数
+void robot_init(void) {
+  arx.height_of_center = 0;           //机器人中心高度
+  arx.mass_body = 30;                 //机身质量
+  arx.mass_wheel = 0.5;               //轮子质量
+  arx.radius_of_wheel = 0.065;        //轮子半径
+  arx.camera_state = 0;
+  arx.module = NORMAL;
+  arx.displacement = 0;
+  arx.displacement_last = 0;
+  arx.velocity_target = 0;
+
+  //最初的标定
+  motor_init(0);
+  position_sensor_init();
+  imu_init();
+  acce_init();
+  gyro_init();
+  camera_init();
+  display_init();
+  key_init();
+}
+
+
 //运动学逆解，已知轮子位置，求解角度期望
 void reverse_motion_solve(float *x_c, float *y_c, float *l, float *phi_14)
 {
@@ -173,6 +169,7 @@ void reverse_motion_solve(float *x_c, float *y_c, float *l, float *phi_14)
 
   // printf("phi[1]:  %f,phi[4]: %f", phi_14[0], phi_14[1]);
 }
+
 void print_state()
 {
   if (balance_infantry.robot_type == JUMP_UP)
@@ -192,6 +189,7 @@ void print_state()
     printf("normal !!! \n");
   }
 }
+
 void jump_change_k()
 {
   if (balance_infantry.robot_type == JUMP_UP || balance_infantry.robot_type == JUMP_DOWN || balance_infantry.robot_type == JUMP_FLOPE)
@@ -211,6 +209,7 @@ void jump_change_k()
     // balance_infantry.K[1][1] = 6;
   }
 }
+
 void jump_state_trans() //跳跃状态转移
 {
   //跳跃代码参考自Doggo
@@ -250,6 +249,7 @@ void jump_state_trans() //跳跃状态转移
     is_pos_init = false;
   }
 }
+
 void force_calc(float extra_balance_force, float extra_leg_force, float *output_force)
 {
   //平衡时的计算
@@ -433,17 +433,17 @@ void get_info_from_sensor()
 
   // //需满足纯滚动条件
   float Z_x_middle =
-      (arx.position_sensor[WHEEL_L].position + arx.position_sensor[WHEEL_R].position) * arx.radius_of_wheel / 2;
+      (arx.position_sensor[WHEEL_L].position + arx.position_sensor[WHEEL_R].position) * arx.radius_of_wheel / 2;//中心位移（相较于原点）
   float w = (arx.position_sensor[WHEEL_L].w + arx.position_sensor[WHEEL_R].w) * arx.radius_of_wheel / 2;
   balance_infantry.state_vector[2] = Z_x_middle;                                         //位移
   balance_infantry.state_vector[3] = balance_infantry.state_vector[3] * 0.95 + w * 0.05; //线速度
 
   balance_infantry.state_vector[5] = arx.gyro.gyro_value[pitch];
 
-  balance_infantry.phi_left[1] = M_PI - arx.position_sensor[KNEE_LBM].position;
+  balance_infantry.phi_left[1] = PI - arx.position_sensor[KNEE_LBM].position;
   balance_infantry.phi_left[4] = -arx.position_sensor[KNEE_LFM].position;
 
-  balance_infantry.phi_right[1] = M_PI - arx.position_sensor[KNEE_RBM].position;
+  balance_infantry.phi_right[1] = PI - arx.position_sensor[KNEE_RBM].position;
   balance_infantry.phi_right[4] = -arx.position_sensor[KNEE_RFM].position;
 }
 
@@ -506,14 +506,14 @@ void LQR_Solve(float *virtual_torque)
 
 void control_init()
 {
-  //五连杆机构参数,L(0)需要哦计算得到
+  //五连杆机构参数,L(0)需要计算得到
   balance_infantry.L_left[1] = 0.15;
   balance_infantry.L_left[2] = 0.3;
   balance_infantry.L_left[3] = 0.3;
   balance_infantry.L_left[4] = 0.15;
   balance_infantry.L_left[5] = 0.15;
 
-  balance_infantry.phi_left[0] = M_PI / 2;
+  balance_infantry.phi_left[0] = PI / 2;
   balance_infantry.theta_left = 0;
   balance_infantry.theta_left_w = 0;
 
@@ -523,7 +523,7 @@ void control_init()
   balance_infantry.L_right[4] = 0.15;
   balance_infantry.L_right[5] = 0.15;
 
-  balance_infantry.phi_right[0] = M_PI / 2;
+  balance_infantry.phi_right[0] =  PI / 2;
   balance_infantry.theta_right = 0; //与垂直线的夹角
   balance_infantry.theta_right_w = 0;
 
@@ -531,31 +531,18 @@ void control_init()
   // -52.5563   -7.3815  -21.2552  -17.8601   21.9583    1.4259
   // 24.9652    4.3519   13.8877   11.3103  134.4296    5.2532
 
-  // balance_infantry.K[0][0] = -52.5563;
-  // balance_infantry.K[0][1] = -7.3815;
-  // balance_infantry.K[0][2] = -21.2552;
-  // balance_infantry.K[0][3] = -17.8601;
-  // balance_infantry.K[0][4] = 21.9583;
-  // balance_infantry.K[0][5] = 1.4259;
-  // balance_infantry.K[1][0] = 24.9652;
-  // balance_infantry.K[1][1] = 4.3519;
-  // balance_infantry.K[1][2] = 13.8877;
-  // balance_infantry.K[1][3] = 11.3103;
-  // balance_infantry.K[1][4] = 134.4296;
-  // balance_infantry.K[1][5] = 5.2532;
-
-  float K_params[12][3] = {{92.9716, -157.9021, -28.3685},
-                           {-10.3298, -28.6164, -2.2200},
-                           {24.7399, -15.9543, -19.2435},
-                           {21.2118, -23.6639, -14.4412},
-                           {159.4265, -125.2661, 38.7084},
-                           {9.7165, -7.6421, 2.4482},
-                           {-0.8049, -15.1622, 27.5487},
-                           {-8.1683, 7.1489, 3.3689},
-                           {100.8302, -79.2252, 24.4813},
-                           {63.9201, -51.6109, 18.2611},
-                           {-156.4691, 100.9039, 121.7065},
-                           {-9.0445, 5.8748, 4.5106}};
+  float K_params[12][3] = { {92.9716, -157.9021, -28.3685},
+                            {-10.3298, -28.6164, -2.2200},
+                            {24.7399, -15.9543, -19.2435},
+                            {21.2118, -23.6639, -14.4412},
+                            {159.4265, -125.2661, 38.7084},
+                            {9.7165, -7.6421, 2.4482},
+                            {-0.8049, -15.1622, 27.5487},
+                            {-8.1683, 7.1489, 3.3689},
+                            {100.8302, -79.2252, 24.4813},
+                            {63.9201, -51.6109, 18.2611},
+                            {-156.4691, 100.9039, 121.7065},
+                            {-9.0445, 5.8748, 4.5106}};
   for (int j = 0; j < 12; j++)
   {
     for (int i = 0; i < 3; i++)
@@ -661,32 +648,7 @@ void MotionSolve(float *L, float *phi, float *theta, float *theta_w) //运动学
   *theta = temp_;
 }
 
-//初始化函数
-void robot_init()
-{
-  arx.height_of_center = 0;
-  arx.mass_body = 30;
-  arx.mass_wheel = 0.5;
-  arx.radius_of_wheel = 0.065;
 
-  arx.camera_state = 0;
-
-  arx.module = NORMAL;
-
-  arx.displacement = 0;
-  arx.displacement_last = 0;
-  arx.velocity_target = 0;
-
-  //最初的标定
-  motor_init(0);
-  position_sensor_init();
-  imu_init();
-  acce_init();
-  gyro_init();
-  camera_init();
-  display_init();
-  key_init();
-}
 
 void motor_init(double angle_set)
 {
@@ -752,7 +714,7 @@ void position_sensor_init()
     arx.position_sensor[i].w = 0;
     arx.position_sensor[i].w_last = 0;
   }
-};
+}
 
 void imu_init()
 {

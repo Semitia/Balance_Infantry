@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "display.h": "c",
+        "scope.h": "c",
+        "arx-4.h": "c",
+        "arx.h": "c",
+        "motor.h": "c"
+    }
+}

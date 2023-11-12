@@ -160,7 +160,7 @@ extern "C"
   } Balence_robot;
 
   // initializing function
-  void robot_init();
+  void robot_init(void);
   void motor_init(double angle_set);
   void position_sensor_init();
   void imu_init();
@@ -192,6 +192,7 @@ extern "C"
   void reveive_velocity_z();
   void display(double variable, double MAX, double MIN, int color, int order, char *value);
   void all_display();
+
 
 #ifdef __cplusplus
 }

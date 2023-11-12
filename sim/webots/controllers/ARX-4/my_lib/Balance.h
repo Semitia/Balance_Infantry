@@ -58,7 +58,7 @@ typedef struct Balance
     float force_l;
     float force_r;
 
-    float K_coef[12][3];
+    float K_coef[12][3]; 
     int robot_type;
     int last_robot_type;
 

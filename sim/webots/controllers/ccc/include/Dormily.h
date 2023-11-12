@@ -77,15 +77,19 @@ void Dormily_init(Dormily_t *D) {
     printf("pos_bias1:%f, pos_bias2:%f\n", D->pos_bias[0], D->pos_bias[1]);
 
     // LQR
-    double A[4][INV] = {{0,1,0,0},{432.353,0,0,0},{0,0,0,1},{-4.9,0,0,0}},
-        B[4][INV] = {{0},{-7.353},{0},{0.25}},
-        K[1][INV] = {{-150.0532, -5.9019, -76.6623, -80.3078}};
-    D->LQR.x = matrix_init2(4, 1);//pitch , pitch_vel, px, vx
-    D->LQR.xd = matrix_init2(4, 1);
+    double A[5][INV] = {{0,1,0,0,0},{432.353,0,0,0,-423.353},{0,0,0,1,0},{-4.9,0,0,0,4.9},{0,0,0,0,0}},
+        B[5][INV] = {{0},{-7.353},{0},{0.25},{0}},
+        K[1][INV] = {{-150.0532, -5.9019, -76.6623, -80.3078,150.0532}},
+        C[1][INV] = {{1,0,0,0,0}},
+        L[5][INV] = {{-0.0000},{-0.0000},{-0.0000},{-0.0000},{-0.01}};
+    D->LQR.x = matrix_init2(5, 1);//pitch , pitch_vel, px, vx, alpha
+    D->LQR.xd = matrix_init2(5, 1);
     D->LQR.u = matrix_init2(1, 1);
-    D->LQR.A = matrix_init(4, 4, A);
-    D->LQR.B = matrix_init(4, 1, B);
-    D->LQR.K = matrix_init(1, 4, K);
+    D->LQR.A = matrix_init(5, 5, A);
+    D->LQR.B = matrix_init(5, 1, B);
+    D->LQR.C = matrix_init(1, 5, C);
+    D->LQR.K = matrix_init(1, 5, K);
+    D->LQR.L = matrix_init(5, 1, L);
 }
 
 /**
@@ -133,6 +137,7 @@ void updateState(Dormily_t *D) {
     D->LQR.x.matrix[1][0] = D->pitch_vel;
     D->LQR.x.matrix[2][0] = D->px;
     D->LQR.x.matrix[3][0] = D->vx;
+    D->LQR.y = D->pitch;
     return;
 }
 
@@ -142,18 +147,18 @@ void updateState(Dormily_t *D) {
 void drawData(Dormily_t *D) {
     D->display.data[0] = D->pitch;
     D->display.data[1] = D->pitch_vel;
-    D->display.data[2] = D->px;
+    D->display.data[2] = D->LQR.x.matrix[4][0];
     D->display.data[3] = D->vx;
     D->display.data[4] = D->motor_torque_out[0];
 
     channelEnable(&D->display, 0, 0x00ff00, PI/5);        //绿色，pitch
     // channelEnable(&D->display, 1, 0xffff00, 10);        //黄色, pitch_vel
-    channelEnable(&D->display, 2, 0xffffff, 2);         //白色, px
+    channelEnable(&D->display, 2, 0xffffff, PI/12);           //白色, alpha
     channelEnable(&D->display, 3, 0xff0000, 1);         //红色. vx
     // channelEnable(&D->display, 4, 0x0000ff, 3);         //蓝色, motor_torque_out
     addDisData(&D->display);
     updateDis(&D->display);
-    printf("pitch:%f, pitch_vel:%f, px:%f, vx:%f, torque:%f\n", D->pitch, D->pitch_vel, D->px, D->vx, D->motor_torque_out[0]);
+    printf("pitch:%f, pitch_hat:%f, alpha:%f, pitch_vel:%f, px:%f, vx:%f \n", D->pitch, D->LQR.y_hat, D->LQR.x.matrix[4][0], D->pitch_vel, D->px, D->vx);
     return;
 }
 
@@ -174,8 +179,8 @@ void dormilyCtrl(Dormily_t *D) {
     D->LQR.xd.matrix[3][0] = D->tar_vx;
     D->LQR.xd.matrix[2][0] = D->px;
     balanceCtrl(D);
-    D->motor_torque_out[0] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
-    D->motor_torque_out[1] = -D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
+    D->motor_torque_out[0] = D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
+    D->motor_torque_out[1] = D->LQR.u.matrix[0][0] * WHEEL_RADIUS;
     setMotorTorque(D, D->motor_torque_out[0], D->motor_torque_out[1]);
     return;
 }
