@@ -36,16 +36,6 @@ typedef struct __Dormily_t {
  * @param D 机器人结构体指针
 */
 void Dormily_init(Dormily_t *D) {
-    //重置机器人物理姿态
-    // const double INITIAL_TRANS[3] = {0, 0, 0.08};
-    // const double INITIAL_ROT[4] = {0, 0, 1, 1.5708};
-    // WbNodeRef robot_node = wb_supervisor_node_get_from_def("Dormily");
-    // WbFieldRef trans_field = wb_supervisor_node_get_field(robot_node, "translation");
-    // WbFieldRef rot_field = wb_supervisor_node_get_field(robot_node, "rotation");
-    // wb_supervisor_field_set_sf_vec3f(trans_field, INITIAL_TRANS);
-    // wb_supervisor_field_set_sf_rotation(rot_field, INITIAL_ROT);
-    // wb_supervisor_node_reset_physics(robot_node);
-
     //display
     displayInit(&D->display);
 

@@ -82,6 +82,10 @@ void ceciliaInit(Cecilia_t *Ce) {
     displayInit(&Ce->Display);
 }
 
+void cecliaCtrl(Cecilia_t *Ce) {
+
+}
+
 /**
  * @brief update state
 */
@@ -131,28 +135,22 @@ void peripherals_check(Cecilia_t *Ce) {
 //     D->LQR.L = matrix_init(5, 1, L);
 // }
 
+/**
+ * @brief 绘制机器人数据波形
+*/
+void drawData(Cecilia_t *Ce) {
+    Ce->Display.data[0] = Ce->IMU.angle_value[pitch];
 
-
-// /**
-//  * @brief 绘制机器人数据波形
-// */
-// void drawData(Dormily_t *D) {
-//     D->display.data[0] = D->pitch;
-//     D->display.data[1] = D->pitch_vel;
-//     D->display.data[2] = D->LQR.x.matrix[4][0];
-//     D->display.data[3] = D->vx;
-//     D->display.data[4] = D->motor_torque_out[0];
-
-//     channelEnable(&D->display, 0, 0x00ff00, PI/5);        //绿色，pitch
-//     // channelEnable(&D->display, 1, 0xffff00, 10);        //黄色, pitch_vel
-//     channelEnable(&D->display, 2, 0xffffff, PI/12);           //白色, alpha
-//     channelEnable(&D->display, 3, 0xff0000, 1);         //红色. vx
-//     // channelEnable(&D->display, 4, 0x0000ff, 3);         //蓝色, motor_torque_out
-//     addDisData(&D->display);
-//     updateDis(&D->display);
-//     printf("pitch:%f, pitch_hat:%f, alpha:%f, pitch_vel:%f, px:%f, vx:%f \n", D->pitch, D->LQR.y_hat, D->LQR.x.matrix[4][0], D->pitch_vel, D->px, D->vx);
-//     return;
-// }
+    channelEnable(&Ce->Display, 0, 0x00ff00, PI/5);        //绿色，pitch
+    // channelEnable(&Ce->Display, 1, 0xffff00, 10);        //黄色, pitch_vel
+    // channelEnable(&Ce->Display, 2, 0xffffff, PI/12);           //白色, alpha
+    // channelEnable(&Ce->Display, 3, 0xff0000, 1);         //红色. vx
+    // channelEnable(&Ce->Display, 4, 0x0000ff, 3);         //蓝色, motor_torque_out
+    addDisData(&Ce->Display);
+    updateDis(&Ce->Display);
+    printf("pitch: %f\r\n", Ce->IMU.angle_value[pitch]);
+    return;
+}
 
 // /**
 //  * @brief balance control
