@@ -6,6 +6,8 @@
 
 #define WHEEL_RADIUS 0.03
 
+#define LEFT  0
+#define RIGHT 1
 //各个电机名字
 typedef enum __MotorName_e {
     KNEE_RBM = 0,
@@ -78,11 +80,14 @@ typedef struct __Cecilia_t {
     float J_inv_r[2][2];                    // 右腿雅可比矩阵逆矩阵
     float force_l;                          // 左侧支持力
     float force_r;                          // 右侧支持力
+    float L0;                               // 平均腿长
     float L_dot[2];                         // 左右腿速度
     float L_ddot[2];                        // 左右腿加速度
     float last_L[2];                        // 上一时刻腿长: [0]-左腿 [1]-右腿
     float last_dotL[2];                     // 上一时刻腿速度
     float last_d_dotL[2];                   // 上一时刻腿加速度
+    float theta[2];                         // 虚拟腿倾角
+    float theta_w[2];                       // 虚拟腿倾角角速度
     float last_theta[2];                    // 上一时刻虚拟腿倾角
     float last_dot_theta[2];                // 上一时刻虚拟腿倾角角速度
     float last_d_dot_theta[2];              // 上一时刻虚拟腿倾角角加速度
@@ -160,50 +165,6 @@ void ceciliaInit(Cecilia_t *Ce) {
 }
 
 /**
- * @brief update state
-*/
-void updateState(Cecilia_t *Ce) {
-    int i;
-    for(i=0; i < MOTOR_NUM; i++) 
-        updateMotor(&Ce->PosSensor[i], &Ce->Motor[i]);
-    updateIMU(&Ce->IMU);
-    updateGyro(&Ce->Gyro);
-    updateAcce(&Ce->Acce);
-    /* 状态更新 */
-    Ce->displacement_last = Ce->displacement;
-    Ce->displacement = (Ce->PosSensor[WHEEL_L].position + Ce->PosSensor[WHEEL_R].position) * Ce->wheel_radius / 2;
-    Ce->velocity = (Ce->displacement - Ce->displacement_last) / T;
-    Ce->w = Ce->w * 0.95 + Ce->Gyro.gyro_value[yaw] * 0.05;
-    Ce->l_phi[1] = PI - Ce->PosSensor[KNEE_LBM].position;
-    Ce->l_phi[4] = -Ce->PosSensor[KNEE_LFM].position;
-    Ce->r_phi[1] = PI - Ce->PosSensor[KNEE_RBM].position;
-    Ce->r_phi[4] = -Ce->PosSensor[KNEE_RFM].position;
-    
-    Ce->last_L[0] = Ce->l_len[0];
-    Ce->last_dotL[0] = Ce->L_dot[0];
-    Ce->last_L[1] = Ce->r_len[0];
-    Ce->last_dotL[1] = Ce->L_dot[1];
-    Ce->last_theta[0] = Ce->l_phi[0];
-    Ce->last_dot_theta[0] = Ce->LQR.x.matrix[5][0];
-    Ce->last_theta[1] = Ce->r_phi[0];
-    Ce->last_dot_theta[1] = Ce->LQR.x.matrix[7][0];
-    motionSolver(Ce->l_len, Ce->l_phi, &Ce->theta_left, &Ce->theta_left_w, Ce->IMU.angle_value[pitch]);
-    motionSolver(Ce->r_len, Ce->r_phi, &Ce->theta_right, &Ce->theta_right_w, Ce->IMU.angle_value[pitch]);
-    /* 更新状态向量 */
-    Ce->LQR.x.matrix[0][0] = Ce->displacement;
-    Ce->LQR.x.matrix[1][0] = Ce->velocity;
-    Ce->LQR.x.matrix[2][0] = Ce->IMU.angle_value[yaw];
-    Ce->LQR.x.matrix[3][0] = Ce->w;
-    Ce->LQR.x.matrix[4][0] = Ce->theta_left;
-    Ce->LQR.x.matrix[5][0] = Ce->theta_left_w;
-    Ce->LQR.x.matrix[6][0] = Ce->theta_right;
-    Ce->LQR.x.matrix[7][0] = Ce->theta_right_w;
-    Ce->LQR.x.matrix[8][0] = Ce->IMU.angle_value[pitch];
-    Ce->LQR.x.matrix[9][0] = Ce->Gyro.gyro_value[pitch];
-    return;
-}
-
-/**
  * @brief 五连杆解算
  * @param L   五连杆长度
  * @param phi 五连杆角度
@@ -239,6 +200,51 @@ void motionSolve(float *L,float *phi,float *theta,float *theta_w,float theta_b)
     *theta_w = *theta_w * 0.95 + (temp_ - (*theta)) * 1000 / TIME_STEP * 0.05;
     //更新当前时刻的theta角
     *theta = temp_;
+}
+
+/**
+ * @brief update state
+*/
+void updateState(Cecilia_t *Ce) {
+    int i;
+    for(i=0; i < MOTOR_NUM; i++) 
+        updateMotor(&Ce->PosSensor[i], &Ce->Motor[i]);
+    updateIMU(&Ce->IMU);
+    updateGyro(&Ce->Gyro);
+    updateAcce(&Ce->Acce);
+    /* 状态更新 */
+    Ce->displacement_last = Ce->displacement;
+    Ce->displacement = (Ce->PosSensor[WHEEL_L].position + Ce->PosSensor[WHEEL_R].position) * Ce->wheel_radius / 2;
+    Ce->velocity = (Ce->displacement - Ce->displacement_last) / T;
+    Ce->w = Ce->w * 0.95 + Ce->Gyro.gyro_value[yaw] * 0.05;
+    Ce->l_phi[1] = PI - Ce->PosSensor[KNEE_LBM].position;
+    Ce->l_phi[4] = -Ce->PosSensor[KNEE_LFM].position;
+    Ce->r_phi[1] = PI - Ce->PosSensor[KNEE_RBM].position;
+    Ce->r_phi[4] = -Ce->PosSensor[KNEE_RFM].position;
+
+    Ce->L0 = (Ce->l_len[0] + Ce->r_len[0]) / 2;
+    Ce->last_L[0] = Ce->l_len[0];
+    Ce->last_dotL[0] = Ce->L_dot[0];
+    Ce->last_L[1] = Ce->r_len[0];
+    Ce->last_dotL[1] = Ce->L_dot[1];
+    Ce->last_theta[0] = Ce->l_phi[0];
+    Ce->last_dot_theta[0] = Ce->LQR.x.matrix[5][0];
+    Ce->last_theta[1] = Ce->r_phi[0];
+    Ce->last_dot_theta[1] = Ce->LQR.x.matrix[7][0];
+    motionSolve(Ce->l_len, Ce->l_phi, &Ce->theta[0], &Ce->theta_w[0], Ce->IMU.angle_value[pitch]);
+    motionSolve(Ce->r_len, Ce->r_phi, &Ce->theta[1], &Ce->theta_w[1], Ce->IMU.angle_value[pitch]);
+    /* 更新状态向量 */
+    Ce->LQR.x.matrix[0][0] = Ce->displacement;
+    Ce->LQR.x.matrix[1][0] = Ce->velocity;
+    Ce->LQR.x.matrix[2][0] = Ce->IMU.angle_value[yaw];
+    Ce->LQR.x.matrix[3][0] = Ce->w;
+    Ce->LQR.x.matrix[4][0] = Ce->theta[0];
+    Ce->LQR.x.matrix[5][0] = Ce->theta_w[0];
+    Ce->LQR.x.matrix[6][0] = Ce->theta[1];
+    Ce->LQR.x.matrix[7][0] = Ce->theta_w[1];
+    Ce->LQR.x.matrix[8][0] = Ce->IMU.angle_value[pitch];
+    Ce->LQR.x.matrix[9][0] = Ce->Gyro.gyro_value[pitch];
+    return;
 }
 
 /**
@@ -295,6 +301,12 @@ void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque,
         output_torque[i + 1] += J[i][j] * virtual_torque[j + 1];
         }
     }
+
+    /* DEBUG */
+    printf("sigma_1: %f, sigma_2: %f, sigma_3: %f\r\n", sigma_1, sigma_2, sigma_3);
+    printf("J: %f, %f, %f, %f\r\n", J[0][0], J[0][1], J[1][0], J[1][1]);
+    printf("virtual_torque: %f, %f, %f\r\n", virtual_torque[0], virtual_torque[1], virtual_torque[2]);
+    printf("output_torque: %f, %f, %f\r\n", output_torque[0], output_torque[1], output_torque[2]);
     return;
 }
 
@@ -320,6 +332,11 @@ void calcOutput(Cecilia_t *Ce) {
     Ce->Motor[WHEEL_R].torque_tgt = output_tor[0];
     Ce->Motor[KNEE_RBM].torque_tgt = output_tor[1];
     Ce->Motor[KNEE_RFM].torque_tgt = output_tor[2];
+
+    /* DEBUG */
+    for(int i=0; i<MOTOR_NUM; i++) {
+        printf("Motor %d: %f\r\n", i, Ce->Motor[i].torque_tgt);
+    }
     return;
 }
 

@@ -1,7 +1,7 @@
 #include "./cecilia_ctrl.h"
 
 Cecilia_t cecilia;
-bool on_off = 0;
+bool on_off = 1;
 double torque[2] = {0, 0};
 
 int main(int argc, char **argv) {
@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
     keyInput();
     updateState(&cecilia);                    //更新状态
     updateLqrK(&cecilia);                     //更新控制器
-    //calcOutput(&cecilia);                     //计算输出
-    //if(on_off) setAllTorque(&cecilia);        //输出力矩
+    calcOutput(&cecilia);                     //计算输出
+    if(on_off) setAllTorque(&cecilia);        //输出力矩
     drawData(&cecilia);                       //绘制波形
 
     //double end_ts = wb_robot_get_time();

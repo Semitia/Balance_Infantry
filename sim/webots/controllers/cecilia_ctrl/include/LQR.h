@@ -24,31 +24,12 @@ typedef struct __LQR_t{
 
 
 void calcLQR(LQR_t *L) {
-    //观测器修正
-    //L->x.matrix[4][0] += L->L.matrix[4][0] * (L->y - L->y_hat);
 
     L->u = mul_matrix(L->K, sub_matrix(L->xd,L->x));
-    // printf("u:\r\n");
+
+    /* DEBUG */
+    // printf("u\r\n");
     // printf_matrix(&L->u);
-    // //观测器预测
-    // //L->x_hat = add_matrix(L->x, add_matrix(mul_matrix(L->A, sub_matrix(L->x, L->xd)), mul_matrix(L->B, L->u)));
-    // Matrix_t X_Xd = sub_matrix(L->x, L->xd);
-    // printf("X_Xd:\r\n");
-    // printf_matrix(&X_Xd);
-    // Matrix_t AX = mul_matrix(L->A, X_Xd);
-    // printf("AX:\r\n");
-    // printf_matrix(&AX);
-    // Matrix_t BU = mul_matrix(L->B, L->u);
-    // printf("BU:\r\n");
-    // printf_matrix(&BU);
-    // L->x_hat = add_matrix(L->x, add_matrix(AX, BU));
-    // printf("x_hat:\r\n");
-    // printf_matrix(&L->x_hat);
-    // L->x_hat = num_mul(0.032,L->x_hat);
-    // printf("x_hat * time:\r\n");
-    // printf_matrix(&L->x_hat);
-    // L->y_hat = mul_matrix(L->C, L->x_hat).matrix[0][0];
-    // printf("y_hat:%f\r\n", L->y_hat);
     return;
 }
 
