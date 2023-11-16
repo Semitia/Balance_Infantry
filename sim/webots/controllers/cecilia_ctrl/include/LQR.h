@@ -22,9 +22,10 @@ typedef struct __LQR_t{
     double y_hat, y;        //
 }LQR_t;
 
+
 void calcLQR(LQR_t *L) {
     //观测器修正
-    L->x.matrix[4][0] += L->L.matrix[4][0] * (L->y - L->y_hat);
+    //L->x.matrix[4][0] += L->L.matrix[4][0] * (L->y - L->y_hat);
 
     L->u = mul_matrix(L->K, sub_matrix(L->xd,L->x));
     printf("u:\r\n");
