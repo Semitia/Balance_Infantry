@@ -46,7 +46,8 @@ typedef struct __Cecilia_t {
 
     /* 运动参数 */
     double velocity;                        // m/s
-    double w_yaw_target;                    // rad/s
+    double w;                               // rad/s
+    double w_tgt;                           // rad/s
     double displacement;                    //机器人质心的位移
     double displacement_last;               //上一个时间戳, 机器人质心的位移
     double velocity_target;                 //机器人的目标速度
@@ -64,7 +65,7 @@ typedef struct __Cecilia_t {
 
 
     LQR_t LQR;                              // LQR控制器
-    float k_f[6][4][10];                    // LQR增益矩阵拟合系数
+    float (*k_f)[4][10];                    // LQR增益矩阵拟合系数
 
     /* 五连杆 */
     float l_len[6];                         // 左腿长度：0-虚拟连杆长度，1-
@@ -77,6 +78,15 @@ typedef struct __Cecilia_t {
     float J_inv_r[2][2];                    // 右腿雅可比矩阵逆矩阵
     float force_l;                          // 左侧支持力
     float force_r;                          // 右侧支持力
+    float L_dot[2];                         // 左右腿速度
+    float L_ddot[2];                        // 左右腿加速度
+    float last_L[2];                        // 上一时刻腿长: [0]-左腿 [1]-右腿
+    float last_dotL[2];                     // 上一时刻腿速度
+    float last_d_dotL[2];                   // 上一时刻腿加速度
+    float last_theta[2];                    // 上一时刻虚拟腿倾角
+    float last_dot_theta[2];                // 上一时刻虚拟腿倾角角速度
+    float last_d_dot_theta[2];              // 上一时刻虚拟腿倾角角加速度
+
 } Cecilia_t;
 
 /**
@@ -106,15 +116,15 @@ void ceciliaInit(Cecilia_t *Ce) {
 
     // LQR
     double  A[10][INV] = {0},
-            B[10][INV] = {0},
-            K[4][INV]  = {0};
+            B[10][INV] = {0};
     Ce->LQR.x = matrix_init2(10, 1);//s-位移, s_dot-速度, yaw, yaw_dot, theta_ll-左腿倾角, theta_ll_dot, theta_lr-右腿倾角, theta_lr_dot, theta_b-机体倾角, theta_b_dot
     Ce->LQR.xd = matrix_init2(10, 1);
     Ce->LQR.u = matrix_init2(4, 1); //torque_lw_l-左驱动轮转矩, torque_lw_r, torque_bl_l-左关节转矩, torque_bl_r
     Ce->LQR.A = matrix_init(10, 10, A);
     Ce->LQR.B = matrix_init(10, 4, B);
+    Ce->LQR.K = matrix_init2(4, 10);
 
-    Ce->k_f = { {
+    static float k_fix[6][4][10] = { {
             {-0.672626,	-2.364401,	-7.401996,	-7.423282,	-8.568568,	-4.880340,	-4.323176,	-1.250817,	-62.175610,	-2.223826},
             {-0.672626,	-2.364401,	7.401996,	7.423282,	-4.323176,	-1.250817,	-8.568568,	-4.880340,	-62.175610,	-2.223826},
             {1.542560,	5.120150,	-5.159871,	-5.189996,	23.684626,	19.171859,	6.609028,	-1.880429,	-88.095716,	-2.868259},
@@ -146,10 +156,8 @@ void ceciliaInit(Cecilia_t *Ce) {
             {-10.650664,	-27.658702,	59.730938,	60.012064,	23.789170,	12.327299,	-157.242215,	17.251548,	369.581000,	9.120055}
         }
     };
-
+    Ce->k_f = k_fix;
 }
-
-
 
 /**
  * @brief update state
@@ -161,8 +169,37 @@ void updateState(Cecilia_t *Ce) {
     updateIMU(&Ce->IMU);
     updateGyro(&Ce->Gyro);
     updateAcce(&Ce->Acce);
-    // 更新状态向量
-
+    /* 状态更新 */
+    Ce->displacement_last = Ce->displacement;
+    Ce->displacement = (Ce->PosSensor[WHEEL_L].position + Ce->PosSensor[WHEEL_R].position) * Ce->wheel_radius / 2;
+    Ce->velocity = (Ce->displacement - Ce->displacement_last) / T;
+    Ce->w = Ce->w * 0.95 + Ce->Gyro.gyro_value[yaw] * 0.05;
+    Ce->l_phi[1] = PI - Ce->PosSensor[KNEE_LBM].position;
+    Ce->l_phi[4] = -Ce->PosSensor[KNEE_LFM].position;
+    Ce->r_phi[1] = PI - Ce->PosSensor[KNEE_RBM].position;
+    Ce->r_phi[4] = -Ce->PosSensor[KNEE_RFM].position;
+    
+    Ce->last_L[0] = Ce->l_len[0];
+    Ce->last_dotL[0] = Ce->L_dot[0];
+    Ce->last_L[1] = Ce->r_len[0];
+    Ce->last_dotL[1] = Ce->L_dot[1];
+    Ce->last_theta[0] = Ce->l_phi[0];
+    Ce->last_dot_theta[0] = Ce->LQR.x.matrix[5][0];
+    Ce->last_theta[1] = Ce->r_phi[0];
+    Ce->last_dot_theta[1] = Ce->LQR.x.matrix[7][0];
+    motionSolver(Ce->l_len, Ce->l_phi, &Ce->theta_left, &Ce->theta_left_w, Ce->IMU.angle_value[pitch]);
+    motionSolver(Ce->r_len, Ce->r_phi, &Ce->theta_right, &Ce->theta_right_w, Ce->IMU.angle_value[pitch]);
+    /* 更新状态向量 */
+    Ce->LQR.x.matrix[0][0] = Ce->displacement;
+    Ce->LQR.x.matrix[1][0] = Ce->velocity;
+    Ce->LQR.x.matrix[2][0] = Ce->IMU.angle_value[yaw];
+    Ce->LQR.x.matrix[3][0] = Ce->w;
+    Ce->LQR.x.matrix[4][0] = Ce->theta_left;
+    Ce->LQR.x.matrix[5][0] = Ce->theta_left_w;
+    Ce->LQR.x.matrix[6][0] = Ce->theta_right;
+    Ce->LQR.x.matrix[7][0] = Ce->theta_right_w;
+    Ce->LQR.x.matrix[8][0] = Ce->IMU.angle_value[pitch];
+    Ce->LQR.x.matrix[9][0] = Ce->Gyro.gyro_value[pitch];
     return;
 }
 
@@ -174,7 +211,7 @@ void updateState(Cecilia_t *Ce) {
  * @param theta_w 倾角角速度
  * @param theta_b 机体倾角
 */
-void Motion_Solve(float *L,float *phi,float *theta,float *theta_w,float theta_b)
+void motionSolve(float *L,float *phi,float *theta,float *theta_w,float theta_b)
 {
     float x_B = L[1] * cos(phi[1]);
     float y_B = L[1] * sin(phi[1]);
@@ -231,7 +268,7 @@ void updateLqrK(Cecilia_t *Ce) {
  * @param force 支持力
  * 
 */
-void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque, float *force, float J[][2])
+void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque, float force, float J[][2])
 {
     float sigma_1 = sin(phi[2] - phi[3]);
     float sigma_2 = sin(phi[3] - phi[4]);
@@ -246,7 +283,7 @@ void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque,
     //腿扭矩？还是支持力
     virtual_torque[1] = -virtual_torque[1];
     // force 为额外力，由滚转角和期望腿长计算而得，以上为正方向
-    virtual_torque[2] = -(*force) * cos(phi[0] - M_PI / 2); //单个杆承受的力
+    virtual_torque[2] = -(force) * cos(phi[0] - M_PI / 2); //单个杆承受的力
     for (int i = 1; i < 3; i++)
     {
         output_torque[i] = 0;
@@ -296,8 +333,6 @@ void setAllTorque(Cecilia_t *Ce) {
     }
     return;
 }
-
-
 
 /**
  * @brief 检查硬件功能

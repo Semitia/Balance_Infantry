@@ -5,7 +5,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-#define INV 5
+#define INV 10
 #define PI 3.14159265358979323846
 
 /**

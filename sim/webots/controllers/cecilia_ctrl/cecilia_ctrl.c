@@ -16,9 +16,9 @@ int main(int argc, char **argv) {
     keyInput();
     updateState(&cecilia);                    //更新状态
     updateLqrK(&cecilia);                     //更新控制器
-    calcOutput(&cecilia);                     //计算输出
-    if(on_off) setAllTorque(&cecilia);        //输出力矩
-    drawData(&cecilia);
+    //calcOutput(&cecilia);                     //计算输出
+    //if(on_off) setAllTorque(&cecilia);        //输出力矩
+    drawData(&cecilia);                       //绘制波形
 
     //double end_ts = wb_robot_get_time();
     //printf("used time: %f\n", end_ts - start_ts);

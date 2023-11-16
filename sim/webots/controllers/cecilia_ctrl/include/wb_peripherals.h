@@ -26,8 +26,9 @@ typedef struct __PosSensor_t
     WbDeviceTag ID;
     const char *name;
     double resolusion;              
-    double position; // rad
+    double position;            // rad
     double position_last;
+    double position_bias;
     double w; // rad/s
     double w_last;
 } PosSensor_t;
@@ -79,7 +80,7 @@ void motorInit(Motor_t *motor, const char *name, double angle_set)
     motor->MAX_ANGLE = wb_motor_get_max_position(motor->ID);
     motor->MIN_ANGLE = wb_motor_get_min_position(motor->ID);
     wb_motor_enable_torque_feedback(motor->ID, (int)TIME_STEP);
-    wb_motor_set_position(motor->ID, angle_set);
+    //wb_motor_set_position(motor->ID, angle_set);
 }
 
 /**
@@ -98,6 +99,9 @@ void posSensorInit(PosSensor_t *pos_sensor, const char *name)
     pos_sensor->position_last = 0;
     pos_sensor->w = 0;
     pos_sensor->w_last = 0;
+    wb_robot_step(TIME_STEP);
+    pos_sensor->position_bias = wb_position_sensor_get_value(pos_sensor->ID);
+    return;
 }
 
 #define roll 0
@@ -162,7 +166,7 @@ void updateGyro(Gyro_t *gyro)
 
 void updatePosSensor(PosSensor_t *pos_sensor) {
     assert(pos_sensor->ID);
-    pos_sensor->position = wb_position_sensor_get_value(pos_sensor->ID);
+    pos_sensor->position = wb_position_sensor_get_value(pos_sensor->ID) - pos_sensor->position_bias;
     pos_sensor->w = (pos_sensor->position - pos_sensor->position_last)/T;
     pos_sensor->position_last = pos_sensor->position;
     return;
