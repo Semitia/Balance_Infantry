@@ -166,7 +166,7 @@ void updateGyro(Gyro_t *gyro)
 
 void updatePosSensor(PosSensor_t *pos_sensor) {
     assert(pos_sensor->ID);
-    pos_sensor->position = wb_position_sensor_get_value(pos_sensor->ID) - pos_sensor->position_bias;
+    pos_sensor->position = wb_position_sensor_get_value(pos_sensor->ID);//这里要用绝对角度
     pos_sensor->w = (pos_sensor->position - pos_sensor->position_last)/T;
     pos_sensor->position_last = pos_sensor->position;
     return;

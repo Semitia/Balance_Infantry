@@ -20,6 +20,6 @@
 /* my lib */
 
 
-#define TIME_STEP 32
+#define TIME_STEP 4
 #define T TIME_STEP/1000
 #endif

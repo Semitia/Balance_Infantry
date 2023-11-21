@@ -24,7 +24,6 @@ typedef struct __LQR_t{
 
 
 void calcLQR(LQR_t *L) {
-
     L->u = mul_matrix(L->K, sub_matrix(L->xd,L->x));
 
     /* DEBUG */

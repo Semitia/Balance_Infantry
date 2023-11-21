@@ -16,8 +16,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.5164507961835906 -0.6306395853340321 -0.5792860161708163 4.014377430699098
-  position 0.34193291138430504 0.5012068579980032 1.814970342027102
+  orientation 0.6326437899944589 -0.5661637870078321 -0.5284130971715192 4.23873877708067
+  position 0.06833958601148704 0.7930961805085011 2.8143762620384507
 }
 TexturedBackground {
 }
@@ -28,8 +28,8 @@ RectangleArena {
   floorSize 55 55
 }
 Robot {
-  translation 0 0.368123 0.000778952
-  rotation 0.1430413246799448 -0.21667348683405702 -0.9657079162650468 0.13379235423224328
+  translation 0.009452451876063825 0.4771100534803293 -0.00045219886939671327
+  rotation 0.00045508670763837455 -0.08068177339253252 0.9967398077423839 0
   children [
     Display {
       width 256
@@ -47,7 +47,7 @@ Robot {
     }
     DEF J1 HingeJoint {
       jointParameters HingeJointParameters {
-        position 0.8887242800201514
+        position 1.3202598728263735
         axis 0 0 1
         anchor -0.075 0 0.15
         suspensionAxis 0 0 1
@@ -56,7 +56,7 @@ Robot {
         DEF RBM RotationalMotor {
           name "RBM"
           minPosition -1
-          maxPosition 1.457792976573843
+          maxPosition 2.193179201460063
           maxTorque 35
         }
         DEF RBS PositionSensor {
@@ -65,11 +65,11 @@ Robot {
       ]
       endPoint Solid {
         translation -0.075 0 0.15
-        rotation 0.2436453972940938 0.686512709796808 0.6850819072671873 2.669292069836941
+        rotation 0.0888176723451742 0.7053073894354228 0.7033156528095859 2.969514457160455
         children [
           DEF J3 HingeJoint {
             jointParameters HingeJointParameters {
-              position -0.8207232174320049
+              position -1.7086054879226555
               axis 0 1 0
               anchor 0 0 -0.15
               suspensionAxis 0 1 0
@@ -83,7 +83,7 @@ Robot {
             ]
             endPoint DEF ref1 Solid {
               translation 0 -0.009999999999999992 -0.15
-              rotation 0 0.9999999999999999 0 1.6492767825679937
+              rotation 0 0.9999999999999999 0 0.7613945120773413
               children [
                 Pose {
                   children [
@@ -171,7 +171,7 @@ Robot {
     }
     DEF J1- HingeJoint {
       jointParameters HingeJointParameters {
-        position 0.9537322270924136
+        position 51.002481285114136
         axis 0 0 1
         anchor -0.075 0 -0.15
         suspensionAxis 0 0 1
@@ -180,7 +180,7 @@ Robot {
         DEF LBM RotationalMotor {
           name "LBM"
           minPosition -1
-          maxPosition 1
+          maxPosition 52.80374453372184
           maxTorque 35
         }
         DEF LBS PositionSensor {
@@ -189,11 +189,11 @@ Robot {
       ]
       endPoint Solid {
         translation -0.075 0 -0.15
-        rotation -0.9111415551921678 0.29038964129370115 -0.2923951480981059 1.6679695949883298
+        rotation -0.8470185785121603 0.375108915698467 -0.37663354738891713 1.7406783431787656
         children [
           DEF J3 HingeJoint {
             jointParameters HingeJointParameters {
-              position 0.9488677860668298
+              position 1.0469486878821916
               axis 0 1 0
               anchor 0 0 -0.15
               suspensionAxis 0 1 0
@@ -206,8 +206,8 @@ Robot {
               }
             ]
             endPoint DEF ref2 Solid {
-              translation 0 -0.010000000000000002 -0.15
-              rotation 0 -0.9999999999999999 0 1.5191322139331693
+              translation 0 -0.009999999999999995 -0.15
+              rotation 0 -1 0 1.4210513121177955
               children [
                 Pose {
                   children [
@@ -295,7 +295,7 @@ Robot {
     }
     DEF J2 HingeJoint {
       jointParameters HingeJointParameters {
-        position -0.24548825845854258
+        position 5.217926992969941
         axis 0 0 1
         anchor 0.075 0 0.15
         suspensionAxis 0 0 1
@@ -304,7 +304,7 @@ Robot {
         DEF RFM RotationalMotor {
           name "RFM"
           minPosition -1.8536813590248087
-          maxPosition 1
+          maxPosition 6.655228294536129
           maxTorque 35
         }
         DEF RFS PositionSensor {
@@ -313,11 +313,11 @@ Robot {
       ]
       endPoint Solid {
         translation 0.075 0 0.15
-        rotation 0.48326124620427363 -0.6192748295413697 -0.618835400905281 2.2470416984363917
+        rotation -0.17987746226750984 0.6964070741806974 0.694738285686978 3.4920537616537835
         children [
           DEF J4 HingeJoint {
             jointParameters HingeJointParameters {
-              position 0.5740383342703472
+              position -4.7615596744421325
               axis 0 1 0
               anchor 0 0 -0.15
             }
@@ -329,12 +329,12 @@ Robot {
               }
             ]
             endPoint DEF ref1 Solid {
-              translation 0 0.009999999999999983 -0.15
-              rotation 0 -1 0 1.8959616657296587
+              translation 0 0.009999999999999981 -0.15
+              rotation 0 1 0 5.334810939917035
               children [
                 DEF J5 HingeJoint {
                   jointParameters HingeJointParameters {
-                    position 236324.01007158542
+                    position 236316.49726921253
                     axis 0 1 0
                     anchor 0 0 -0.288
                     dampingConstant 0.2
@@ -349,8 +349,8 @@ Robot {
                     }
                   ]
                   endPoint DEF wheel_r Solid {
-                    translation 0 0.020999999999999977 -0.288
-                    rotation -0.8440103094547771 0.3793913930250127 0.37908939372210343 1.738794698351023
+                    translation 0 0.02099999999999996 -0.288
+                    rotation 0.9639601226316831 0.1881983616863301 0.18804855392821235 4.676487670182071
                     children [
                       DEF wheel_r Pose {
                         children [
@@ -393,7 +393,7 @@ Robot {
                 }
                 HingeJoint {
                   jointParameters HingeJointParameters {
-                    position -0.2605460393502978
+                    position -0.8447101748472499
                     axis 0 1 0
                     anchor 0 0 -0.288
                     suspensionAxis 0 1 0
@@ -455,7 +455,7 @@ Robot {
     }
     DEF J2- HingeJoint {
       jointParameters HingeJointParameters {
-        position -0.38361368107242666
+        position 74.4120916786338
         axis 0 0 1
         anchor 0.075 0 -0.15
         suspensionAxis 0 0 1
@@ -464,7 +464,7 @@ Robot {
         DEF LFM RotationalMotor {
           name "LFM"
           minPosition -1
-          maxPosition 1
+          maxPosition 75.76910425486018
           maxTorque 35
         }
         DEF LFS PositionSensor {
@@ -473,28 +473,28 @@ Robot {
       ]
       endPoint Solid {
         translation 0.075 0 -0.15
-        rotation -0.7231871835196266 -0.48798467980519866 0.4887445650525106 1.8945029284696464
+        rotation -0.91959647492753 -0.27675660434357563 0.2788334722609075 1.6587151048625104
         children [
           DEF J4 HingeJoint {
             jointParameters HingeJointParameters {
-              position -0.7276783072903185
+              position 23.970493500694317
               axis 0 1 0
               anchor 0 0 -0.15
             }
             device [
               RotationalMotor {
                 minPosition -10
-                maxPosition 10
+                maxPosition 24.29530969241784
                 maxTorque 0
               }
             ]
             endPoint Solid {
-              translation 0 0.009999999999999995 -0.15
-              rotation 0 0.9999999999999999 0 1.7423216927096798
+              translation 0 0.009999999999999988 -0.15
+              rotation 0 1 0 1.3077522719759689
               children [
                 DEF J5 HingeJoint {
                   jointParameters HingeJointParameters {
-                    position 328614.7104135783
+                    position 328621.2775654331
                     axis 0 1 0
                     anchor 0 0 -0.288
                     dampingConstant 0.2
@@ -509,8 +509,8 @@ Robot {
                     }
                   ]
                   endPoint DEF wheel_l Solid {
-                    translation 0 0.020999999999999987 -0.288
-                    rotation 0.35175295933532436 0.6621811129482121 0.6616540102300515 3.8185625879263645
+                    translation 0 0.02099999999999999 -0.288
+                    rotation -0.4585652776268512 -0.6286281729296334 -0.6281277786837324 2.2810811727736837
                     children [
                       DEF wheel_l Pose {
                         children [
@@ -553,7 +553,7 @@ Robot {
                 }
                 HingeJoint {
                   jointParameters HingeJointParameters {
-                    position 0.33911975140685935
+                    position 0.48598644762353627
                     axis 0 1 0
                     anchor 0 0 -0.288
                     suspensionAxis 0 1 0
