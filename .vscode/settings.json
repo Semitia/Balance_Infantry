@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "ctrl.h": "c",
+        "dormily.h": "c",
+        "stdio.h": "c",
+        "matrix.h": "c",
+        "sys.h": "c",
+        "lqr.h": "c",
+        "math.h": "c",
+        "arx.h": "c",
+        "stdint.h": "c",
+        "cecilia_ctrl.h": "c",
+        "cecilia.h": "c",
+        "wb_peripherals.h": "c"
+    }
+}
