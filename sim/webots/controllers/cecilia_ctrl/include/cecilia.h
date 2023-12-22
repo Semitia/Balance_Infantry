@@ -342,6 +342,31 @@ void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque,
     return;
 }
 
+
+void leg_test(Cecilia_t *Ce, float phi, float len) {
+    float virtual[3]={0}, output_tor[3]={0};
+    float tem_phi = Ce->l_phi[0];
+    float tem_len = Ce->l_len[0];
+    if(phi > tem_phi) {
+        virtual[1] = 10;
+    }
+    else {
+        virtual[1] = -10;
+    }
+    if(len > tem_len) {
+        Ce->force_l = 20;
+    }
+    else {
+        Ce->force_l = -20;
+    }
+    solveVMC(Ce->l_len, Ce->l_phi, virtual, output_tor, Ce->force_l, Ce->J_l);
+    Ce->Motor[WHEEL_L].torque_tgt = output_tor[0];         
+    Ce->Motor[KNEE_LBM].torque_tgt = output_tor[1];
+    Ce->Motor[KNEE_LFM].torque_tgt = output_tor[2];
+    printf("left\r\n");
+    printf("vir_wheel: %f, vir_knee %f\r\nwheel: %f, LBM: %f, LFM: %f\r\n", virtual[0], virtual[1], Ce->Motor[WHEEL_L].torque_tgt, Ce->Motor[KNEE_LBM].torque_tgt, Ce->Motor[KNEE_LFM].torque_tgt);
+}
+
 /**
  * @brief 计算各个电机输出
 */
@@ -353,7 +378,7 @@ void calcOutput(Cecilia_t *Ce) {
     virtual[0] = Ce->LQR.u.matrix[0][0];                    //驱动轮输出转矩
     virtual[1] = -Ce->LQR.u.matrix[2][0];                   //关节转矩
     // virtual[1] = -50;  //负力矩抬头
-    Ce->force_l = 20;                                       //支持力
+    Ce->force_l = 200;                                       //支持力
     solveVMC(Ce->l_len, Ce->l_phi, virtual, output_tor, Ce->force_l, Ce->J_l);
     Ce->Motor[WHEEL_L].torque_tgt = output_tor[0];         //这里反了一下,调整极性
     Ce->Motor[KNEE_LBM].torque_tgt = output_tor[1];         //左右关节电机负力矩都是顺时针转
@@ -364,7 +389,7 @@ void calcOutput(Cecilia_t *Ce) {
     virtual[0] = Ce->LQR.u.matrix[1][0];            
     virtual[1] = -Ce->LQR.u.matrix[3][0];      
     //virtual[1] = -50;  //负力矩抬头
-    Ce->force_r = 20; 
+    Ce->force_r = 200; 
     solveVMC(Ce->r_len, Ce->r_phi, virtual, output_tor, Ce->force_r, Ce->J_r);
     Ce->Motor[WHEEL_R].torque_tgt = -output_tor[0];         
     Ce->Motor[KNEE_RBM].torque_tgt = output_tor[1];
