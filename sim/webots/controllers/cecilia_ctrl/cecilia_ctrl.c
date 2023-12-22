@@ -16,7 +16,8 @@ int main(int argc, char **argv) {
     keyInput();
     updateState(&cecilia);                    //更新状态
     updateLqrK(&cecilia);                     //更新控制器
-    calcOutput(&cecilia);                     //计算输出
+    //calcOutput(&cecilia);                     //计算输出
+    leg_test(&cecilia, 2, 0.3);
     if(on_off) setAllTorque(&cecilia);        //输出力矩
     drawData(&cecilia);                       //绘制波形
 
@@ -42,7 +43,6 @@ void keyInput(void) {
         break;
       case WB_KEYBOARD_DOWN:
         //printf("Backward\n");
-
 
         break;
       case WB_KEYBOARD_LEFT:

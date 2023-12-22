@@ -4,6 +4,9 @@
         "cecilia.h": "c",
         "lqr.h": "c",
         "sys.h": "c",
-        "wb_peripherals.h": "c"
+        "wb_peripherals.h": "c",
+        "matrix.h": "c",
+        "tools.h": "c",
+        "display.h": "c"
     }
 }

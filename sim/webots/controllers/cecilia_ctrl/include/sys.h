@@ -18,7 +18,7 @@
 #include <webots/display.h>
 #include <webots/supervisor.h>
 /* my lib */
-
+#include "tools.h"
 
 #define TIME_STEP 4
 #define T TIME_STEP/1000

@@ -18,6 +18,7 @@ typedef enum __MotorName_e {
     WHEEL_L,
     MOTOR_NUM
 } MotorName_e;
+
 //robot mode
 typedef enum __Mode_e {
     JUMP_PRE = 0,       //预备跳跃
@@ -203,6 +204,7 @@ void ceciliaInit(Cecilia_t *Ce) {
 */
 void motionSolve(float *L,float *phi,float *theta,float *theta_w,float theta_b)
 {
+    //原点在A点，x轴向右，y轴向上
     float x_B = L[1] * cos(phi[1]);
     float y_B = L[1] * sin(phi[1]);
     float x_D = L[4] * cos(phi[4]) + L[5];
@@ -231,10 +233,10 @@ void motionSolve(float *L,float *phi,float *theta,float *theta_w,float theta_b)
     *theta = temp_;
 
     /* DEBUG */
-    printf("motion solve: \r\n");
-    printf("L: %f, %f, %f, %f, %f, %f\r\n", L[0], L[1], L[2], L[3], L[4], L[5]);
-    printf("phi: %f, %f, %f, %f, %f, %f\r\n", phi[0], phi[1], phi[2], phi[3], phi[4], phi[5]);
-    printf("theta_body: %f, theta: %f \r\n", theta_b, *theta);
+    // printf("motion solve: \r\n");
+    // printf("L: %f, %f, %f, %f, %f, %f\r\n", L[0], L[1], L[2], L[3], L[4], L[5]);
+    // printf("phi: %f, %f, %f, %f, %f, %f\r\n", phi[0], phi[1], phi[2], phi[3], phi[4], phi[5]);
+    // printf("theta_body: %f, theta: %f \r\n", theta_b, *theta);
 }
 
 /**
@@ -252,9 +254,9 @@ void updateState(Cecilia_t *Ce) {
     Ce->displacement = (Ce->PosSensor[WHEEL_L].position - Ce->PosSensor[WHEEL_L].position_bias + Ce->PosSensor[WHEEL_R].position - Ce->PosSensor[WHEEL_R].position_bias) * Ce->wheel_radius / 2;
     Ce->velocity = (Ce->displacement - Ce->displacement_last) / T;
     Ce->w = Ce->w * 0.95 + Ce->Gyro.gyro_value[yaw] * 0.05;
-    Ce->l_phi[1] = PI - Ce->PosSensor[KNEE_LBM].position;
-    
-    Ce->l_phi[4] = -Ce->PosSensor[KNEE_LFM].position;
+
+    Ce->l_phi[1] = PI - normalize(Ce->PosSensor[KNEE_LBM].position);
+    Ce->l_phi[4] = -normalize(Ce->PosSensor[KNEE_LFM].position);
     Ce->r_phi[1] = PI - Ce->PosSensor[KNEE_RBM].position;
     Ce->r_phi[4] = -Ce->PosSensor[KNEE_RFM].position;
     // printf("LBM: %f\r\n", Ce->PosSensor[KNEE_LBM].position);
@@ -285,7 +287,7 @@ void updateState(Cecilia_t *Ce) {
     Ce->LQR.x.matrix[5][0] = Ce->theta_w[0];
     Ce->LQR.x.matrix[6][0] = Ce->theta[1];
     Ce->LQR.x.matrix[7][0] = Ce->theta_w[1];
-    printf("displacement: %f, velocity: %f \r\nyaw: %f, w: %f \r\ntheta_l: %f, theta_w_l: %f \r\ntheta_r: %f, theta_w_r: %f \r\ntheta_body: %f, theta_w_body: %f \r\n", Ce->LQR.x.matrix[0][0], Ce->LQR.x.matrix[1][0], Ce->LQR.x.matrix[2][0], Ce->LQR.x.matrix[3][0], Ce->LQR.x.matrix[4][0], Ce->LQR.x.matrix[5][0], Ce->LQR.x.matrix[6][0], Ce->LQR.x.matrix[7][0], Ce->LQR.x.matrix[8][0], Ce->LQR.x.matrix[9][0]);
+    //printf("displacement: %f, velocity: %f \r\nyaw: %f, w: %f \r\ntheta_l: %f, theta_w_l: %f \r\ntheta_r: %f, theta_w_r: %f \r\ntheta_body: %f, theta_w_body: %f \r\n", Ce->LQR.x.matrix[0][0], Ce->LQR.x.matrix[1][0], Ce->LQR.x.matrix[2][0], Ce->LQR.x.matrix[3][0], Ce->LQR.x.matrix[4][0], Ce->LQR.x.matrix[5][0], Ce->LQR.x.matrix[6][0], Ce->LQR.x.matrix[7][0], Ce->LQR.x.matrix[8][0], Ce->LQR.x.matrix[9][0]);
     return;
 }
 
@@ -311,60 +313,103 @@ void updateLqrK(Cecilia_t *Ce) {
  * @brief 五连杆VMC解算
  * @param l 五连杆长度
  * @param phi 五连杆角度
- * @param virtual_torque 虚拟力矩 : [0]-驱动轮输出转矩 [1]-关节转矩
+ * @param virtual_torque 虚拟力矩 : [0]-驱动轮输出转矩 [1]-关节转矩 [2]-支持力
  * @param output_torque  输出扭矩 : [0]-驱动轮输出力矩 [1]-左侧关节电机输出转矩 [2]-右侧关节电机输出转矩
  * @param force 支持力
  * 
 */
 void solveVMC(float *l, float *phi, float *virtual_torque, float *output_torque, float force, float J[][2])
 {
+    float R[2][2];
+    float Fx,Fy,F,Tp,Fn,Fc;//水平与竖直力，支持力，关节转矩，径向力，切向力
+
     float sigma_1 = sin(phi[2] - phi[3]);
     float sigma_2 = sin(phi[3] - phi[4]);
     float sigma_3 = sin(phi[1] - phi[2]);
+    //Fx.Fy映射到关节转矩的雅可比矩阵
+    J[0][0] =  l[1] * sigma_3 * sin(phi[3]) / sigma_1;
+    J[0][1] =  l[4] * sigma_2 * sin(phi[2]) / sigma_1;
+    J[1][0] = -l[1] * sigma_3 * cos(phi[3]) / sigma_1;
+    J[1][1] = -l[4] * sigma_2 * cos(phi[2]) / sigma_1;
+    //
+    R[0][0] =  cos(phi[0] - M_PI / 2);
+    R[0][1] = -sin(phi[0] - M_PI / 2);
+    R[1][0] =  sin(phi[0] - M_PI / 2);
+    R[1][1] =  cos(phi[0] - M_PI / 2);
 
-    J[0][0] = -l[1] * cos(phi[0] - phi[3]) * sigma_3 / l[0] / sigma_1;
-    J[0][1] = -l[1] * sin(phi[0] - phi[3]) * sigma_3 / sigma_1;
-    J[1][0] = -l[4] * cos(phi[0] - phi[2]) * sigma_2 / l[0] / sigma_1;
-    J[1][1] = -l[4] * sin(phi[0] - phi[2]) * sigma_2 / sigma_1;
-    //轮毂电机输出扭矩
-    output_torque[0] = virtual_torque[0];
     // force 为支持力，由滚转角和期望腿长计算而得，以上为正方向
     virtual_torque[2] = (force) / cos(phi[0] - M_PI / 2); //单个腿推力
+    F = -virtual_torque[2]; //反一下，正为伸腿， 负为收腿
+    Tp = virtual_torque[1];
+    Fc = Tp/l[0];
+    Fn = F;
+    Fx = R[0][0] * Fc + R[0][1] * Fn;
+    Fy = R[1][0] * Fc + R[1][1] * Fn;
 
-    output_torque[1] = virtual_torque[2] * J[0][0] + virtual_torque[1] * J[1][0];
-    output_torque[2] = virtual_torque[2] * J[0][1] + virtual_torque[1] * J[1][1];
+    //轮毂电机输出扭矩
+    output_torque[0] = virtual_torque[0];
+    output_torque[1] = J[0][0] * Fx + J[1][0] * Fy;
+    output_torque[2] = J[0][1] * Fx + J[1][1] * Fy;
 
     /* DEBUG */
-    // printf("sigma_1: %f, sigma_2: %f, sigma_3: %f\r\n", sigma_1, sigma_2, sigma_3);
-    // printf("J: %f, %f, %f, %f\r\n", J[0][0], J[0][1], J[1][0], J[1][1]);
+    printf("phi: %f, %f, %f, %f, %f\r\n", phi[0], phi[1], phi[2], phi[3], phi[4]);
+    printf("F %f, Tp %f, Fc %f, Fn %f, Fx %f, Fy %f\r\n", F, Tp, Fc, Fn, Fx, Fy);
+    printf("J: \r\n %f, %f\r\n %f, %f\r\n", J[0][0], J[0][1], J[1][0], J[1][1]);
     // printf("virtual_torque: %f, %f, %f\r\n", virtual_torque[0], virtual_torque[1], virtual_torque[2]);
     // printf("output_torque: %f, %f, %f\r\n", output_torque[0], output_torque[1], output_torque[2]);
     return;
+}
+
+
+void leg_test(Cecilia_t *Ce, float phi, float len) {
+    float virtual[3]={0}, output_tor[3]={0};
+    float tem_phi = Ce->l_phi[0];
+    float tem_len = Ce->l_len[0];
+    if(phi > tem_phi) {
+        virtual[1] = 5;
+    }
+    else {
+        virtual[1] = -5;
+    }
+    if(len > tem_len) {
+        Ce->force_l = 20;
+    }
+    else {
+        Ce->force_l = -20;
+    }
+    solveVMC(Ce->l_len, Ce->l_phi, virtual, output_tor, Ce->force_l, Ce->J_l);
+    Ce->Motor[WHEEL_L].torque_tgt = output_tor[0];         
+    Ce->Motor[KNEE_LBM].torque_tgt = output_tor[1];
+    Ce->Motor[KNEE_LFM].torque_tgt = output_tor[2];
+
+    printf("left\r\n");
+    printf("tem_phi: %f, tem_len: %f\r\n", tem_phi, tem_len);
+    printf("vir_wheel: %f, vir_knee %f, vir_F %f\r\nwheel: %f, LBM: %f, LFM: %f\r\n", virtual[0], virtual[1], Ce->force_l, Ce->Motor[WHEEL_L].torque_tgt, Ce->Motor[KNEE_LBM].torque_tgt, Ce->Motor[KNEE_LFM].torque_tgt);
 }
 
 /**
  * @brief 计算各个电机输出
 */
 void calcOutput(Cecilia_t *Ce) {
-    float virtual[3], output_tor[3];
+    float virtual[3]={0}, output_tor[3]={0};
     calcLQR(&Ce->LQR);
 
     /* left */
     virtual[0] = Ce->LQR.u.matrix[0][0];                    //驱动轮输出转矩
     virtual[1] = -Ce->LQR.u.matrix[2][0];                   //关节转矩
-    // virtual[1] = -50;  //负力矩抬头
-    Ce->force_l = 20;                                       //支持力
+    // virtual[1] = -50;                                    //从左侧看，正力矩抬头，机身顺时针转, 腿往后伸是phi0增大
+    Ce->force_l = 200;                                      //支持力
     solveVMC(Ce->l_len, Ce->l_phi, virtual, output_tor, Ce->force_l, Ce->J_l);
-    Ce->Motor[WHEEL_L].torque_tgt = output_tor[0];         //这里反了一下,调整极性
-    Ce->Motor[KNEE_LBM].torque_tgt = output_tor[1];         //左右关节电机负力矩都是顺时针转
-    Ce->Motor[KNEE_LFM].torque_tgt = output_tor[2];     
+    Ce->Motor[WHEEL_L].torque_tgt = output_tor[0];          //这里反了一下,调整极性
+    Ce->Motor[KNEE_LBM].torque_tgt = output_tor[1];         //左右关节电机正力矩都是顺时针转，从机器人左侧看
+    Ce->Motor[KNEE_LFM].torque_tgt = output_tor[2];         //phi, l序号 都是从机器人左侧看
     printf("left\r\n");
     printf("vir_wheel: %f, vir_knee %f\r\nwheel: %f, LBM: %f, LFM: %f\r\n", virtual[0], virtual[1], Ce->Motor[WHEEL_L].torque_tgt, Ce->Motor[KNEE_LBM].torque_tgt, Ce->Motor[KNEE_LFM].torque_tgt);
     /* right */
     virtual[0] = Ce->LQR.u.matrix[1][0];            
     virtual[1] = -Ce->LQR.u.matrix[3][0];      
     //virtual[1] = -50;  //负力矩抬头
-    Ce->force_r = 20; 
+    Ce->force_r = 200; 
     solveVMC(Ce->r_len, Ce->r_phi, virtual, output_tor, Ce->force_r, Ce->J_r);
     Ce->Motor[WHEEL_R].torque_tgt = -output_tor[0];         
     Ce->Motor[KNEE_RBM].torque_tgt = output_tor[1];

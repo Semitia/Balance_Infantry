@@ -3,7 +3,6 @@
 
 #include "sys.h"
 #include "display.h"
-#include "tools.h"
 
 /* 电机 */
 typedef struct __Motor_t
@@ -81,6 +80,8 @@ void motorInit(Motor_t *motor, const char *name, double angle_set)
     motor->MIN_ANGLE = wb_motor_get_min_position(motor->ID);
     wb_motor_enable_torque_feedback(motor->ID, (int)TIME_STEP);
     //wb_motor_set_position(motor->ID, angle_set);
+
+    printf("motor %s 's MAX_TORQUE: %f\n", motor->name, motor->MAX_TORQUE);
 }
 
 /**

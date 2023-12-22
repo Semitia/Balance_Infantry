@@ -1,11 +1,10 @@
-#ifndef __TOOLS_H__
-#define __TOOLS_H__
-
-#define limit(x, min, max) (x < min ? min : (x > max ? max : x))
+#ifndef __MY_MATH_H__
+#define __MY_MATH_H__
 
 #ifndef PI
 #define PI 3.14159265358979323846
 #endif
+
 /**
  * @brief 角度归一化（弧度制）
  * @param theta 角度
@@ -21,4 +20,4 @@ float normalize(float theta) {
     return theta;
 }
 
-#endif // __TOOLS_H__
+#endif // __MY_MATH_H__
