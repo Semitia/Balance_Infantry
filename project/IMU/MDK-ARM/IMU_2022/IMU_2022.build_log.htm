@@ -1,0 +1,298 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: ¦ÌVision V5.25.3.0
+Copyright (C) 2018 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: bei zhou, huazhong, LIC=RC93N-Y59N0-HLACL-0WR4A-ZUPX7-3K4RL
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Plus  Version: 5.18
+Toolchain Path:  D:\Keil\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 1 (build 61)
+Assembler:       Armasm.exe V5.06 update 1 (build 61)
+Linker/Locator:  ArmLink.exe V5.06 update 1 (build 61)
+Library Manager: ArmAr.exe V5.06 update 1 (build 61)
+Hex Converter:   FromElf.exe V5.06 update 1 (build 61)
+CPU DLL:         SARMCM3.DLL V5.18
+Dialog DLL:      DARMCM1.DLL V1.12.0.0
+Target DLL:      Segger\JL2CM3.dll V2.99.29.0
+Dialog DLL:      TARMCM1.DLL V1.9.0.0
+ 
+<h2>Project:</h2>
+C:\Users\zhou\Desktop\wheel-leg-20230730\IMU\MDK-ARM\IMU_2022.uvprojx
+Project File Date:  08/02/2023
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 1 (build 61)', folder: 'D:\Keil\ARM\ARMCC\Bin'
+Rebuild target 'IMU_2022'
+assembling startup_stm32f042x6.s...
+compiling dma.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/dma.c: 8 warnings, 0 errors
+compiling TempControl.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+TempControl.c: 8 warnings, 0 errors
+compiling can.c...
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+../Core/Src/can.c(165): warning:  #223-D: function "memcpy" declared implicitly
+    memcpy(tx_data, &data1, 4);
+../Core/Src/can.c(183): warning:  #223-D: function "memcpy" declared implicitly
+    memcpy(tx_data, &data[0], 2);
+../Core/Src/can.c: 10 warnings, 0 errors
+compiling stm32f0xx_it.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/stm32f0xx_it.c: 8 warnings, 0 errors
+compiling gpio.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/gpio.c: 8 warnings, 0 errors
+compiling icm.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+icm.c(314): warning:  #177-D: variable "i" was declared but never referenced
+  	int i;
+icm.c(315): warning:  #177-D: variable "gyro" was declared but never referenced
+  	int16_t gyro[3] = {0, 0, 0}, acc[3] = {0, 0, 0};
+icm.c(315): warning:  #177-D: variable "acc" was declared but never referenced
+  	int16_t gyro[3] = {0, 0, 0}, acc[3] = {0, 0, 0};
+icm.c(316): warning:  #177-D: variable "gyro_sum" was declared but never referenced
+  	int16_t gyro_sum[3] = {0, 0, 0}, acc_sum[3] = {0, 0, 0};
+icm.c(316): warning:  #177-D: variable "acc_sum" was declared but never referenced
+  	int16_t gyro_sum[3] = {0, 0, 0}, acc_sum[3] = {0, 0, 0};
+icm.c: 13 warnings, 0 errors
+compiling stm32f0xx_hal_can.c...
+compiling stm32f0xx_hal.c...
+compiling Kalman_Filter.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+Kalman_Filter.c: 8 warnings, 0 errors
+compiling main.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/main.c: 8 warnings, 0 errors
+compiling stm32f0xx_hal_msp.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/stm32f0xx_hal_msp.c: 8 warnings, 0 errors
+compiling spi.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/spi.c: 8 warnings, 0 errors
+compiling stm32f0xx_hal_rcc.c...
+compiling tim.c...
+../Core/Inc/can.h(43): warning:  #1295-D: Deprecated declaration CAN_Init - give arg types
+  void CAN_Init();
+../Core/Inc/can.h(44): warning:  #1295-D: Deprecated declaration CAN_Filter_Init - give arg types
+  void CAN_Filter_Init();
+../Core/Inc/can.h(45): warning:  #1295-D: Deprecated declaration CAN_Transmit_Init - give arg types
+  void CAN_Transmit_Init();
+..\MDK-ARM\icm.h(150): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\TempControl.h(37): warning:  #1295-D: Deprecated declaration Temp_init - give arg types
+  void Temp_init();
+..\MDK-ARM\TempControl.h(38): warning:  #1295-D: Deprecated declaration TempControl - give arg types
+  void TempControl();
+..\MDK-ARM\TempControl.h(39): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\MDK-ARM\Kalman_Filter.h(11): warning:  #1-D: last line of file ends without a newline
+  #endif
+../Core/Src/tim.c(292): warning:  #223-D: function "CANSendMagRaw" declared implicitly
+          CANSendMagRaw(gyro_raw, 0x100);
+../Core/Src/tim.c(294): warning:  #223-D: function "CANSendMagRaw" declared implicitly
+          CANSendMagRaw(acc_raw, 0x101);
+../Core/Src/tim.c: 10 warnings, 0 errors
+compiling stm32f0xx_hal_rcc_ex.c...
+compiling stm32f0xx_hal_i2c_ex.c...
+compiling stm32f0xx_hal_gpio.c...
+compiling FusionAhrs.c...
+compiling stm32f0xx_hal_pwr_ex.c...
+compiling stm32f0xx_hal_cortex.c...
+compiling stm32f0xx_hal_dma.c...
+compiling stm32f0xx_hal_i2c.c...
+compiling stm32f0xx_hal_flash_ex.c...
+compiling stm32f0xx_hal_pwr.c...
+compiling stm32f0xx_hal_exti.c...
+compiling FusionBias.c...
+compiling FusionCompass.c...
+compiling stm32f0xx_hal_spi_ex.c...
+compiling stm32f0xx_hal_flash.c...
+compiling system_stm32f0xx.c...
+compiling stm32f0xx_hal_spi.c...
+compiling stm32f0xx_hal_tim_ex.c...
+compiling stm32f0xx_hal_tim.c...
+linking...
+Program Size: Code=14356 RO-data=248 RW-data=340 ZI-data=1628  
+FromELF: creating hex file...
+"IMU_2022\IMU_2022.axf" - 0 Error(s), 97 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.4.5.0.pack
+                ARM.CMSIS.4.5.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 4.3.0
+
+Package Vendor: Keil
+                https://www.keil.com/pack/Keil.STM32F0xx_DFP.2.1.1.pack
+                Keil.STM32F0xx_DFP.2.1.1
+                STMicroelectronics STM32F0 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_IMU_2022
+  D:\Keil\Pack\ARM\CMSIS\4.5.0\CMSIS\Include
+  D:\Keil\Pack\Keil\STM32F0xx_DFP\2.1.1\Drivers\CMSIS\Device\ST\STM32F0xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:4.3.0
+Build Time Elapsed:  00:00:16
+</pre>
+</body>
+</html>

@@ -1,0 +1,13 @@
+.\objects\signalgenerator.o: ..\Algorithm\src\SignalGenerator.c
+.\objects\signalgenerator.o: ..\Algorithm\inc\SignalGenerator.h
+.\objects\signalgenerator.o: D:\WORK\SOFTWARES\MDK5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\signalgenerator.o: ..\User\inc\tools\tools.h
+.\objects\signalgenerator.o: D:\WORK\SOFTWARES\MDK5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\signalgenerator.o: D:\WORK\SOFTWARES\MDK5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\signalgenerator.o: D:\WORK\SOFTWARES\MDK5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\signalgenerator.o: D:\WORK\SOFTWARES\MDK5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\signalgenerator.o: ..\Library\CMSIS\arm_math.h
+.\objects\signalgenerator.o: ..\Library\CMSIS\core_cm4.h
+.\objects\signalgenerator.o: ..\Library\CMSIS\core_cmInstr.h
+.\objects\signalgenerator.o: ..\Library\CMSIS\core_cmFunc.h
+.\objects\signalgenerator.o: ..\Library\CMSIS\core_cm4_simd.h
