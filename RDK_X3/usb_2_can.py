@@ -1,11 +1,7 @@
 """
-This a library to use the USB2CAN module.
-temperial functions:    set_ATmode, 
-                        send standard CAN frame, 
-                        receive and decode CAN frame.
+This a library to
 author: Leonaruic
 GitHub: github.com/semitia
-Page: 
 date: 2023-12-28
 version: 0.0.1
 """
@@ -27,6 +23,13 @@ def add_tail(cmd):
     return cmd
 
 
+class CanMsg:
+    def __init__(self, can_id, data, data_len):
+        self.can_id = can_id
+        self.data = data
+        self.data_len = data_len
+
+
 class USB2CAN:
     def __init__(self, port, baud):
         try:
@@ -41,6 +44,7 @@ class USB2CAN:
         self.ReadPortThread = threading.Thread(target=self.read_port)
         self.ReadPortThread.start()
         self.ack_ok = False
+        self.canMsgList = []
         
     def read_port(self):
         while True:
@@ -83,7 +87,9 @@ class USB2CAN:
             can_id = (self.rxbuf[2] << 3) | (self.rxbuf[3] >> 5)
             data_len = self.rxbuf[6]
             data = self.rxbuf[7:7+data_len]
-            print("can_id: ", hex(can_id), "data_len: ", data_len, "data: ", binascii.hexlify(data))
+            new_can_msg = CanMsg(can_id, data, data_len)
+            self.canMsgList.append(new_can_msg)
+            # print("can_id: ", hex(can_id), "data_len: ", data_len, "data: ", binascii.hexlify(data))
         self.rxbuf.clear()    
     
     def wait_ok_ack(self, action):
