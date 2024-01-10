@@ -8,7 +8,7 @@ import os
 import time
 import signal
 import numpy as np
-from usb_2_can import Usb2Can
+from usb_2_can import USB2CAN
 
 # UART config 
 BOUND = 2000000
@@ -96,7 +96,7 @@ class HT_04:
         
 class HT_04_Ctrl:
     def __init__(self, port, baudrate):
-        self.usb2can = Usb2Can(port, baudrate)
+        self.usb2can = USB2CAN(port, baudrate)
         self.usb2can.set_ATmode()
         self.motor =   [[HT_04(LEFT_FRONT_HT_ID),  HT_04(LEFT_BACK_HT_ID)], 
                         [HT_04(RIGHT_FRONT_HT_ID), HT_04(RIGHT_BACK_HT_ID)]]
@@ -134,14 +134,14 @@ class HT_04_Ctrl:
         cur_ff_send = float_to_uint(cur_ff_send, T_MIN, T_MAX, 12)
         # 数据打包
         msg = [];
-        msg.append(p>>8)
-        msg.append(p&0xFF)
-        msg.append(v>>4)
-        msg.append(((v&0xF)<<4) | (KP>>8))
-        msg.append(KP&0xFF)
-        msg.append(KD>>4)
-        msg.append(((KD&0xF)<<4) | (cur_ff>>8))
-        msg.append(cur_ff&0xFF)
+        msg.append(pos_send>>8)
+        msg.append(pos_send&0xFF)
+        msg.append(vel_send>>4)
+        msg.append(((vel_send&0xF)<<4) | (KP_send>>8))
+        msg.append(KP_send&0xFF)
+        msg.append(KD_send>>4)
+        msg.append(((KD_send&0xF)<<4) | (cur_ff_send>>8))
+        msg.append(cur_ff_send&0xFF)
         self.usb2can.send_std(motor.id, msg)
         
     def recvMsg(self):
@@ -150,6 +150,7 @@ class HT_04_Ctrl:
         """
         list = self.usb2can.canMsgList
         for msg in list:
+            id = msg.data[0]
             pos_recv = (msg.data[1]<<8) | msg.data[2]
             vel_recv = (msg.data[3]<<4) | (msg.data[4]>>4)
             cur_recv = ((msg.data[4]&0xF)<<8) | msg.data[5]
@@ -157,14 +158,14 @@ class HT_04_Ctrl:
             pos_recv = uint_to_float(pos_recv, P_MIN, P_MAX, 16)
             vel_recv = uint_to_float(vel_recv, V_MIN, V_MAX, 12)
             cur_recv = uint_to_float(cur_recv, T_MIN, T_MAX, 12)
-            
-            if msg.can_id in motor_dict:
-                left_right, front_back = motor_dict[msg.can_id]
+            print("can_id: ", hex(id), "pos: ", pos_recv, "vel: ", vel_recv, "cur: ", cur_recv)
+            if id in motor_dict:
+                left_right, front_back = motor_dict[id]
                 self.motor[left_right][front_back].state.pos = pos_recv
                 self.motor[left_right][front_back].state.vel = vel_recv
                 self.motor[left_right][front_back].state.cur = cur_recv
             else:
-                print("Error: unknown can_id: ", hex(msg.can_id))
+                print("Error: unknown motor id: ", id)
         # clear canMsgList
         self.usb2can.canMsgList.clear()
             
@@ -173,10 +174,10 @@ class HT_04_Ctrl:
         电机位置回0
         """
         self.set_mode(motor, CMD_MOTOR_MODE)        # 需要先将控制参数设为0
-        sleep(0.1)
+        time.sleep(0.1)
         zero_cmd = MotorCtrlCmd()
         self.send_para(motor, zero_cmd)
-        sleep(0.1)
+        time.sleep(0.1)
         
     def start_motor(self, motor):
         """
@@ -201,11 +202,25 @@ if __name__ == '__main__':
     baudrate = BOUND
     uart_dev= UART_DEV
     ctrl = HT_04_Ctrl(uart_dev, baudrate)
-    zero_ctrl_cmd = MotorCtrlCmd()
+    test_ctrl_cmd = MotorCtrlCmd()
+    test_ctrl_cmd.KP = 5
+    test_ctrl_cmd.KD = 0.2
+    test_ctrl_cmd.cur_ff = 0
+    flag = 1;
     while (True):
-        ctrl.send_para(ctrl.motor[LEFT][FRONT], zero_ctrl_cmd)
-        ctrl.send_para(ctrl.motor[LEFT][BACK], zero_ctrl_cmd)
-        ctrl.send_para(ctrl.motor[RIGHT][FRONT], zero_ctrl_cmd)
-        ctrl.send_para(ctrl.motor[RIGHT][BACK], zero_ctrl_cmd)
+        # position control test
+        test_ctrl_cmd.pos_tar += 0.1*flag
+        if test_ctrl_cmd.pos_tar > P_MAX:
+            flag = -1
+        if test_ctrl_cmd.pos_tar < P_MIN:
+            flag = 1
+        
+        # # velocity control test
+        # test_ctrl_cmd.vel_tar = 1
+        
+        ctrl.send_para(ctrl.motor[LEFT][FRONT], test_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[LEFT][BACK], test_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[RIGHT][FRONT], test_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[RIGHT][BACK], test_ctrl_cmd)
         ctrl.recvMsg()
         time.sleep(1)

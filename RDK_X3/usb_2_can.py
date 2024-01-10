@@ -69,7 +69,7 @@ class USB2CAN:
         elif self.end_flag == 1:
             if byte == 0x0a:
                 self.end_flag = 0
-                print("received ", binascii.hexlify(self.rxbuf))
+                # print("received ", binascii.hexlify(self.rxbuf))
                 self.process_frame()
             else:
                 self.end_flag = 0
@@ -130,18 +130,18 @@ class USB2CAN:
         # print("send_std: ", binascii.hexlify(cmd))
 
 
-# # 功能测试
-# def signal_handler(signal, frame):
-#     sys.exit(0)
-# if __name__ == '__main__':
-#     signal.signal(signal.SIGINT, signal_handler) # ctrl+c 退出
-#     print("List of enabled UART:")
-#     os.system('ls /dev/tty[a-zA-Z]*')
-#     uart_dev= "/dev/ttyUSB0" # input("请输出需要测试的串口设备名:")
-#     baudrate = 2000000 # input("请输入波特率(9600,19200,38400,57600,115200,921600):")
-#     usb2can = USB2CAN(uart_dev, int(baudrate))
-#     usb2can.set_ATmode()
-#     while True:
-#         usb2can.send_std(0x01, [0x01, 0x02, 0x03, 0x04])
-#         time.sleep(1)
+# 功能测试
+def signal_handler(signal, frame):
+    sys.exit(0)
+if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler) # ctrl+c 退出
+    print("List of enabled UART:")
+    os.system('ls /dev/tty[a-zA-Z]*')
+    uart_dev= "/dev/ttyUSB0" # input("请输出需要测试的串口设备名:")
+    baudrate = 2000000 # input("请输入波特率(9600,19200,38400,57600,115200,921600):")
+    usb2can = USB2CAN(uart_dev, int(baudrate))
+    usb2can.set_ATmode()
+    while True:
+        usb2can.send_std(0x63, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFC])
+        time.sleep(1)
     
