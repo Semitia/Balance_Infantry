@@ -100,6 +100,10 @@ class HT_04_Ctrl:
         self.usb2can.set_ATmode()
         self.motor =   [[HT_04(LEFT_FRONT_HT_ID),  HT_04(LEFT_BACK_HT_ID)], 
                         [HT_04(RIGHT_FRONT_HT_ID), HT_04(RIGHT_BACK_HT_ID)]]
+        # 使能电机
+        for i in range(2):
+            for j in range(2):
+                self.start_motor(self.motor[i][j])
         print("HT_04_Ctrl init ok!")
         
     def set_mode(self, motor, mode):
@@ -164,11 +168,27 @@ class HT_04_Ctrl:
         # clear canMsgList
         self.usb2can.canMsgList.clear()
             
-            
+    def zero_pos(self, motor):
+        """
+        电机位置回0
+        """
+        self.set_mode(motor, CMD_MOTOR_MODE)        # 需要先将控制参数设为0
+        sleep(0.1)
+        zero_cmd = MotorCtrlCmd()
+        self.send_para(motor, zero_cmd)
+        sleep(0.1)
+        
+    def start_motor(self, motor):
+        """
+        启动电机控制
+        """
+        self.set_mode(motor, CMD_MOTOR_MODE)
 
-
-
-
+    def stop_motor(self, motor):
+        """
+        停止电机控制
+        """
+        self.set_mode(motor, CMD_RESET_MODE)
 
 
 # 功能测试
@@ -180,4 +200,12 @@ if __name__ == '__main__':
     os.system('ls /dev/tty[a-zA-Z]*')
     baudrate = BOUND
     uart_dev= UART_DEV
-    
+    ctrl = HT_04_Ctrl(uart_dev, baudrate)
+    zero_ctrl_cmd = MotorCtrlCmd()
+    while (True):
+        ctrl.send_para(ctrl.motor[LEFT][FRONT], zero_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[LEFT][BACK], zero_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[RIGHT][FRONT], zero_ctrl_cmd)
+        ctrl.send_para(ctrl.motor[RIGHT][BACK], zero_ctrl_cmd)
+        ctrl.recvMsg()
+        time.sleep(1)
