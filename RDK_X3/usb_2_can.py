@@ -1,5 +1,5 @@
 """
-This a library to
+This a library to use USB2CAN module.
 author: Leonaruic
 GitHub: github.com/semitia
 date: 2023-12-28
@@ -10,8 +10,8 @@ import sys
 import signal
 import os
 import time
-import threading
 import signal
+import threading
 import serial
 import serial.tools.list_ports
 import numpy as np
@@ -38,9 +38,9 @@ class USB2CAN:
             print("USB2CAN init failed, error: ", e)
             return
         print("USB2CAN init successfully with port:", port, "baud:", baud)
+        
         self.rxbuf = bytearray()
         self.end_flag = 0
-        # self.rxbuf_len = 0
         self.ReadPortThread = threading.Thread(target=self.read_port)
         self.ReadPortThread.start()
         self.ack_ok = False
@@ -56,7 +56,6 @@ class USB2CAN:
                     self.process_byte(byte)
             time.sleep(0.001)
         
-    
     def process_byte(self, byte):
         """处理单个字节
         Args:
@@ -131,18 +130,18 @@ class USB2CAN:
         # print("send_std: ", binascii.hexlify(cmd))
 
 
-# 功能测试
-def signal_handler(signal, frame):
-    sys.exit(0)
-if __name__ == '__main__':
-    signal.signal(signal.SIGINT, signal_handler) # ctrl+c 退出
-    print("List of enabled UART:")
-    os.system('ls /dev/tty[a-zA-Z]*')
-    uart_dev= "/dev/ttyUSB0" # input("请输出需要测试的串口设备名:")
-    baudrate = 115200 # input("请输入波特率(9600,19200,38400,57600,115200,921600):")
-    usb2can = USB2CAN(uart_dev, int(baudrate))
-    usb2can.set_ATmode()
-    while True:
-        usb2can.send_std(0x01, [0x01, 0x02, 0x03, 0x04])
-        time.sleep(1)
+# # 功能测试
+# def signal_handler(signal, frame):
+#     sys.exit(0)
+# if __name__ == '__main__':
+#     signal.signal(signal.SIGINT, signal_handler) # ctrl+c 退出
+#     print("List of enabled UART:")
+#     os.system('ls /dev/tty[a-zA-Z]*')
+#     uart_dev= "/dev/ttyUSB0" # input("请输出需要测试的串口设备名:")
+#     baudrate = 2000000 # input("请输入波特率(9600,19200,38400,57600,115200,921600):")
+#     usb2can = USB2CAN(uart_dev, int(baudrate))
+#     usb2can.set_ATmode()
+#     while True:
+#         usb2can.send_std(0x01, [0x01, 0x02, 0x03, 0x04])
+#         time.sleep(1)
     
